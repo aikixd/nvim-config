@@ -1,0 +1,8 @@
+{
+  "dressing.nvim": { "branch": "master", "commit": "e6eff7a5a950a853c3903d906dbcea03f778db5f" },
+  "lazy.nvim": { "branch": "main", "commit": "4c8b625bc873ca76b76eee0c28c98f1f7148f17f" },
+  "legendary.nvim": { "branch": "master", "commit": "d6166169f3cc2214398a6f516f2f2a0ccc2472c4" },
+  "plenary.nvim": { "branch": "master", "commit": "36aaceb6e93addd20b1b18f94d86aecc552f30c4" },
+  "telescope.nvim": { "branch": "0.1.x", "commit": "776b509f80dd49d8205b9b0d94485568236d1192" },
+  "which-key.nvim": { "branch": "main", "commit": "d871f2b664afd5aed3dc1d1573bef2fb24ce0484" }
+}

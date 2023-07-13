@@ -28,6 +28,7 @@ return {
       -- your configuration comes here
       -- or leave it empty to use the default settings
       -- refer to the configuration section below
+      hidden = {},
     },
     config = function (_, otps)
       local wk = require("which-key")

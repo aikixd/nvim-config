@@ -27,6 +27,10 @@ M.key_groups = {
 M.keymap = {
   common = {
     mk_map({ "n", "v" }, "<esc>", ":noh<cr><esc>", "Escape and clear hlsearch"),
+    mk_map({ "n" }, "<C-\\>", function () require("which-key").show_command(nil, "n") end, "Which key"),
+    mk_map({ "v" }, "<C-\\>", function () require("which-key").show_command(nil, "v") end, "Which key"),
+    mk_map({ "i" }, "<C-\\>", function () require("which-key").show_command(nil, "i") end, "Which key"),
+    mk_map({ "o" }, "<C-\\>", function () require("which-key").show_command(nil, "o") end, "Which key"),
     
     -- Section: hjkl
     mk_map({ "n" }, "<C-l>", "<C-w><C-l>", "To right window"),
@@ -53,6 +57,7 @@ M.keymap = {
 
     -- Section: <leader>f
     mk_map({ "n", "v" }, "<leader>fb", ":Telescope buffers<cr>", "Find buffer", "telescope"),
+    mk_map({ "n", "v" }, "<leader>fe", ":Neotree<cr>", "Explorer", "neo-tree"),
     mk_map({ "n", "v" }, "<leader>ff", ":Telescope find_files<cr>", "Find file", "telescope"),
     mk_map({ "n", "v" }, "<leader>fF", ":Telescope oldfiles<cr>", "Previous files", "telescope"),
     mk_map({ "n", "v" }, "<leader>fq", ":Explore<cr>", "Explorer (built-in)"),
@@ -60,6 +65,7 @@ M.keymap = {
     -- Section: <leader>s
     mk_map({ "n", "v" }, "<leader>sf", ":Telescope current_buffer_fuzzy_find<cr>", "Search here", "telescope"),
     mk_map({ "n", "v" }, "<leader>ss", ":Telescope live_grep<cr>", "Search in files", "telescope"),
+    mk_map({ "n", "v" }, "<leader>sv", ":Telescope grep_string<cr>", "Search current term", "telescope"),
 
     -- Resize window 
     mk_map("n", "<C-Up>", "<cmd>resize +2<cr>", { desc = "Increase window height" }),
@@ -77,6 +83,7 @@ end
 
 
 local function config_netrw_explorer()
+  -- vim.api.nvim_create_autocmd({"FileType"}, { pattern = {"neo-tree"}, callback = require("config.map_fixes").neo_tree } )
   vim.api.nvim_create_autocmd({"FileType"}, {
     pattern = {"netrw"},
     callback = function() 
@@ -155,6 +162,12 @@ function M.setup(opts)
   vim.opt.scrolloff = 4
   vim.opt.virtualedit = "block"
   vim.opt.wrap = false
+
+  -- Tabs
+  vim.opt.expandtab = true
+  vim.opt.tabstop = 2
+  vim.opt.softtabstop = 2
+  vim.opt.shiftwidth = 2
 
   config_netrw_explorer()
 

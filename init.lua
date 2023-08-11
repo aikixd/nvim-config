@@ -18,7 +18,8 @@ cfg.setup()
 require("lazy").setup({
   spec = {
     { import = "plugins/common" },
-    { import = "plugins/editor" }
+    { import = "plugins/editor" },
+    { import = "plugins/lsp" }
   }
 }
 

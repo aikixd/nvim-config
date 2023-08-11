@@ -16,7 +16,7 @@ local function mk_map(mode, lhs, rhs, opts, ctx)
   }
 end
 
-M.key_groups = { 
+M.key_groups = {
   mode = { "n", "v" },
   ["g"] = { name = "+goto", mode = { "n", "v", "o" } },
   ["<leader>"] = { name = "select" },
@@ -31,7 +31,7 @@ M.keymap = {
     mk_map({ "v" }, "<C-\\>", function () require("which-key").show_command(nil, "v") end, "Which key"),
     mk_map({ "i" }, "<C-\\>", function () require("which-key").show_command(nil, "i") end, "Which key"),
     mk_map({ "o" }, "<C-\\>", function () require("which-key").show_command(nil, "o") end, "Which key"),
-    
+
     -- Section: hjkl
     mk_map({ "n" }, "<C-l>", "<C-w><C-l>", "To right window"),
     mk_map({ "n" }, "<C-h>", "<C-w><C-h>", "To left window"),
@@ -55,19 +55,26 @@ M.keymap = {
     mk_map("v", "<A-j>", ":m '>+1<cr>gv=gv", { desc = "Move down" }),
     mk_map("v", "<A-k>", ":m '<-2<cr>gv=gv", { desc = "Move up" }),
 
+    -- Section: <leader>c
+    mk_map({ "n" }, "<leader>cd", function() vim.diagnostic.open_float({ source = true, border = 'rounded' }) end, "Show diagnostics"),
+    mk_map({ "n" }, "<leader>co", ":Neotree document_symbols<cr>", "Source outline", "neo-tree"),
+
     -- Section: <leader>f
     mk_map({ "n", "v" }, "<leader>fb", ":Telescope buffers<cr>", "Find buffer", "telescope"),
-    mk_map({ "n", "v" }, "<leader>fe", ":Neotree<cr>", "Explorer", "neo-tree"),
+    mk_map({ "n", "v" }, "<leader>fe", ":Neotree toggle<cr>", "Explorer", "neo-tree"),
     mk_map({ "n", "v" }, "<leader>ff", ":Telescope find_files<cr>", "Find file", "telescope"),
     mk_map({ "n", "v" }, "<leader>fF", ":Telescope oldfiles<cr>", "Previous files", "telescope"),
     mk_map({ "n", "v" }, "<leader>fq", ":Explore<cr>", "Explorer (built-in)"),
+    mk_map({ "n", "v" }, "<leader>fr", ":Neotree reveal<cr>", "Reveal current", "neo-tree"),
+    mk_map({ "n", "v" }, "<leader>fw", ":Telescope jumplist<cr>", "Jump list", "telescope"),
 
     -- Section: <leader>s
     mk_map({ "n", "v" }, "<leader>sf", ":Telescope current_buffer_fuzzy_find<cr>", "Search here", "telescope"),
+    mk_map({ "n", "v" }, "<leader>sh", ":Telescope help_tags<cr>", "Search help tags", "telescope"),
     mk_map({ "n", "v" }, "<leader>ss", ":Telescope live_grep<cr>", "Search in files", "telescope"),
     mk_map({ "n", "v" }, "<leader>sv", ":Telescope grep_string<cr>", "Search current term", "telescope"),
 
-    -- Resize window 
+    -- Resize window
     mk_map("n", "<C-Up>", "<cmd>resize +2<cr>", { desc = "Increase window height" }),
     mk_map("n", "<C-Down>", "<cmd>resize -2<cr>", { desc = "Decrease window height" }),
     mk_map("n", "<C-Left>", "<cmd>vertical resize -2<cr>", { desc = "Decrease window width" }),
@@ -86,7 +93,7 @@ local function config_netrw_explorer()
   -- vim.api.nvim_create_autocmd({"FileType"}, { pattern = {"neo-tree"}, callback = require("config.map_fixes").neo_tree } )
   vim.api.nvim_create_autocmd({"FileType"}, {
     pattern = {"netrw"},
-    callback = function() 
+    callback = function()
       if vim.b.netrw_fixed then return end
       vim.b.netrw_fixed = true
 
@@ -116,23 +123,23 @@ local function config_netrw_explorer()
         ["x"] = "Open with",
         ["X"] = "Exec with system()",
       }
-      local hide = { 
+      local hide = {
         "<LeftMouse>",
-	"<2-LeftMouse>",
-	"<C-LeftMouse>",
-	"<S-LeftMouse>",
-	"<S-LeftDrag>",
-	"<MiddleMouse>",
-	"<RightMouse>",
-	"<CR>",
-	"<S-CR>",
+        "<2-LeftMouse>",
+        "<C-LeftMouse>",
+        "<S-LeftMouse>",
+        "<S-LeftDrag>",
+        "<MiddleMouse>",
+        "<RightMouse>",
+        "<CR>",
+        "<S-CR>",
       }
 
       for _, m in ipairs(map) do
         if descs[m.lhs] then
-	  maps[m.lhs] = { 
-            m.rhs, 
-            descs[m.lhs], 
+	  maps[m.lhs] = {
+            m.rhs,
+            descs[m.lhs],
             buffer = 0,
             expr = m.expr,
             noremap = m.noremap,
@@ -147,17 +154,18 @@ local function config_netrw_explorer()
       local wk = require("which-key")
       wk.register(maps)
       wk.register({ ["c"] = { name = "dir", buffer = 0 } })
-      
+
       vim.keymap.del("n", "<C-l>", { buffer = 0 })
       vim.keymap.del("n", "<C-r>", { buffer = 0 })
     end
   })
 end
 
-function M.setup(opts) 
+function M.setup(opts)
   vim.g.mapleader = " "
   vim.g.maplocalleader = " "
 
+  vim.opt.list = true
   vim.opt.number = true
   vim.opt.scrolloff = 4
   vim.opt.virtualedit = "block"
@@ -174,19 +182,19 @@ function M.setup(opts)
   vim.api.nvim_create_user_command(
     "CheckMap",
     function (opts)
-      local function print_map(maps) 
+      local function print_map(maps)
         for _, m in ipairs(maps) do
           if m.lhs == opts.args or m.lhsraw == opts.args then
-	    print(vim.inspect(m))
+            print(vim.inspect(m))
           end
-	end
+        end
       end
       print_map(vim.api.nvim_buf_get_keymap(0, "n"))
       print_map(vim.api.nvim_buf_get_keymap(0, "v"))
       print_map(vim.api.nvim_get_keymap("n"))
       print_map(vim.api.nvim_get_keymap("v"))
     end,
-    { 
+    {
       nargs = 1,
       complete = "function"
     }

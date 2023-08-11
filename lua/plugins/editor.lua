@@ -3,10 +3,10 @@ local config = require('config')
 
 return {
   {
-    'nvim-telescope/telescope.nvim', 
+    'nvim-telescope/telescope.nvim',
     branch = '0.1.x',
     dependencies = { 'nvim-lua/plenary.nvim' },
-    keys = 
+    keys =
       util.map(
         config.get_keys_filtered('telescope'),
         util.key_canon_to_lazy
@@ -20,16 +20,29 @@ return {
           n = {
             ["u"] = "preview_scrolling_up",
             ["m"] = "preview_scrolling_down",
+            ["q"] = "actions.close",
           }
         }
       }
     }
-  },	
-  { 'echasnovski/mini.nvim', version = false },
+  },
+  {
+    'echasnovski/mini.nvim',
+    version = false,
+    config = function(_, _)
+      require('mini.indentscope').setup({
+        symbol = '│'
+      })
+    end
+  },
+  {
+    "lukas-reineke/indent-blankline.nvim",
+    opts = { }
+  },
   {
     "nvim-neo-tree/neo-tree.nvim",
     branch = "v3.x",
-    dependencies = { 
+    dependencies = {
       "nvim-lua/plenary.nvim",
       "nvim-tree/nvim-web-devicons", -- not strictly required, but recommended
       "MunifTanjim/nui.nvim",
@@ -40,131 +53,143 @@ return {
         config.get_keys_filtered('neo-tree'),
         util.key_canon_to_lazy
       ),
-      opts = {
-        window = {
-          mappings = {
-            ["<space>"] = {
-              "toggle_node",
-              nowait = false, -- disable `nowait` if you have existing combos starting with this char that you want to use
-            },
-            ["<2-LeftMouse>"] = { 
-              "open",
-              desc = "Open"
-            },
-            ["<cr>"] = { 
-              "open",
-              desc = "Open"
+    opts = {
+      window = {
+        mappings = {
+          ["<space>"] = {
+            "toggle_node",
+            nowait = false, -- disable `nowait` if you have existing combos starting with this char that you want to use
+          },
+          ["<2-LeftMouse>"] = {
+            "open",
+            desc = "Open"
+          },
+          ["<cr>"] = {
+            "open",
+            desc = "Open"
 
+          },
+          ["<esc>"] = {
+            "cancel",
+            desc = "Cancel",
+          }, -- close preview or floating neo-tree window
+          ["P"] = {
+            "toggle_preview",
+            config = { use_float = true },
+            desc = "Toggle preview"
+          },
+          ["l"] = {
+            "focus_preview",
+            desc = "Focus preview"
+          },
+          ["S"] = {
+            "open_split",
+            desc = "Open in new h-split"
+          },
+          -- ["S"] = "split_with_window_picker",
+          ["s"] = {
+            "open_vsplit",
+            desc = "Open in new v-split"
+          },
+          -- ["s"] = "vsplit_with_window_picker",
+          ["t"] = {
+            "open_tabnew",
+            desc = "Open in new tab"
+          },
+          -- ["<cr>"] = "open_drop",
+          -- ["t"] = "open_tab_drop",
+          ["w"] = {
+            "open_with_window_picker",
+            desc = "Open in picked window"
+          },
+          ["C"] = {
+            "close_node",
+            desc = "Close node"
+          },
+          ["z"] = {
+            "close_all_nodes",
+            desc = "Close all nodes"
+          },
+          --["Z"] = "expand_all_nodes",
+          ["R"] = {
+            "refresh",
+            desc = "Refresh"
+          },
+          ["a"] = {
+            "add",
+            -- some commands may take optional config options, see `:h neo-tree-mappings` for details
+            config = {
+              show_path = "none", -- "none", "relative", "absolute"
             },
-            ["<esc>"] = { 
-              "cancel",
-              desc = "Cancel",
-            }, -- close preview or floating neo-tree window
-            ["P"] = { 
-              "toggle_preview",
-              config = { use_float = true },
-              desc = "Toggle preview"
-            },
-            ["l"] = { 
-              "focus_preview",
-              desc = "Focus preview"
-            },
-            ["S"] = { 
-              "open_split",
-              desc = "Open in new h-split"
-            },
-            -- ["S"] = "split_with_window_picker",
-            ["s"] = {
-              "open_vsplit",
-              desc = "Open in new v-split"
-            },
-            -- ["s"] = "vsplit_with_window_picker",
-            ["t"] = {
-              "open_tabnew",
-              desc = "Open in new tab"
-            },
-            -- ["<cr>"] = "open_drop",
-            -- ["t"] = "open_tab_drop",
-            ["w"] = {
-              "open_with_window_picker",
-              desc = "Open in picked window"
-            },
-            ["C"] = {
-              "close_node",
-              desc = "Close node"
-            },
-            ["z"] = {
-              "close_all_nodes",
-              desc = "Close all nodes"
-            },
-            --["Z"] = "expand_all_nodes",
-            ["R"] = {
-              "refresh",
-              desc = "Refresh"
-            },
-            ["a"] = {
-              "add",
-              -- some commands may take optional config options, see `:h neo-tree-mappings` for details
-              config = {
-                show_path = "none", -- "none", "relative", "absolute"
-              },
-              desc = "Add item"
-            },
-            ["A"] = {
-              "add_directory",
-              desc = "Add directory"
-            }, -- also accepts the config.show_path and config.insert_as options.
-            ["d"] = {
-              "delete",
-              desc = "Delete"
-            },
-            ["r"] = {
-              "rename",
-              desc = "Rename"
-            },
-            ["y"] = {
-              "copy_to_clipboard",
-              desc = "Copy to clipboard"
-            },
-            ["x"] = {
-              "cut_to_clipboard",
-              desc = "Cut to clipboard"
-            },
-            ["p"] = {
-              "paste_from_clipboard",
-              desc = "Pase from clipboard"
-            },
-            ["c"] = {
-              "copy",
-              desc = "Copy"
-            }, -- takes text input for destination, also accepts the config.show_path and config.insert_as options
-            ["m"] = {
-              "move",
-              desc = "Move"
-            }, -- takes text input for destination, also accepts the config.show_path and config.insert_as options
-            ["e"] = {
-              "toggle_auto_expand_width",
-              desc = "Toggle auto-expand width"
-            },
-            ["q"] = {
-              "close_window",
-              desc = "Close window"
-            },
-            ["?"] = {
-              "show_help",
-              desc = "Show help"
-            },
-            ["<"] = {
-              "prev_source",
-              desc = "Previous source"
-            },
-            [">"] = {
-              "next_source",
-              desc = "Next source"
-            },
-          }
+            desc = "Add item"
+          },
+          ["A"] = {
+            "add_directory",
+            desc = "Add directory"
+          }, -- also accepts the config.show_path and config.insert_as options.
+          ["d"] = {
+            "delete",
+            desc = "Delete"
+          },
+          ["r"] = {
+            "rename",
+            desc = "Rename"
+          },
+          ["y"] = {
+            "copy_to_clipboard",
+            desc = "Copy to clipboard"
+          },
+          ["x"] = {
+            "cut_to_clipboard",
+            desc = "Cut to clipboard"
+          },
+          ["p"] = {
+            "paste_from_clipboard",
+            desc = "Pase from clipboard"
+          },
+          ["c"] = {
+            "copy",
+            desc = "Copy"
+          }, -- takes text input for destination, also accepts the config.show_path and config.insert_as options
+          ["m"] = {
+            "move",
+            desc = "Move"
+          }, -- takes text input for destination, also accepts the config.show_path and config.insert_as options
+          ["e"] = {
+            "toggle_auto_expand_width",
+            desc = "Toggle auto-expand width"
+          },
+          ["q"] = {
+            "close_window",
+            desc = "Close window"
+          },
+          ["?"] = {
+            "show_help",
+            desc = "Show help"
+          },
+          ["<"] = {
+            "prev_source",
+            desc = "Previous source"
+          },
+          [">"] = {
+            "next_source",
+            desc = "Next source"
+          },
         }
-      }
+      },
+    },
+    config = function(_, opts)
+      local defaults = require('neo-tree.defaults')
+      if defaults.sources["document_symbols"] == nil then
+        defaults.sources[#defaults.sources + 1] = "document_symbols"
+        opts.sources = defaults.sources
+        vim.print(vim.inspect(opts))
+      else
+        vim.notify("Document symbols were added to neotree, remove the addition in config.", vim.log.levels.WARN)
+      end
+
+      require('neo-tree').setup(opts)
+    end
     --init = function()
     --  if vim.fn.argc() == 1 then
     --    local stat = vim.loop.fs_stat(vim.fn.argv(0))

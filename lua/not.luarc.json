@@ -1,0 +1,27 @@
+{
+    "workspace.library": [
+        "/home/aikixd/.config/nvim",
+        "/home/aikixd/.local/share/nvim/lazy/lazy.nvim",
+        "/home/aikixd/.local/share/nvim/lazy/nui.nvim",
+        "/home/aikixd/.local/share/nvim/lazy/nvim-web-devicons",
+        "/home/aikixd/.local/share/nvim/lazy/plenary.nvim",
+        "/home/aikixd/.local/share/nvim/lazy/neo-tree.nvim",
+        "/home/aikixd/.local/share/nvim/lazy/which-key.nvim",
+        "/home/aikixd/.local/share/nvim/lazy/mini.nvim",
+        "/home/aikixd/.local/share/nvim/lazy/dressing.nvim",
+        "/home/aikixd/.local/share/nvim/lazy/indent-blankline.nvim",
+        "/home/aikixd/.local/share/nvim/lazy/cmp-buffer",
+        "/home/aikixd/.local/share/nvim/lazy/nvim-cmp",
+        "/home/aikixd/.local/share/nvim/lazy/nvim-lspconfig",
+        "/home/aikixd/.local/share/nvim/lazy/mason.nvim",
+        "/home/aikixd/.local/share/nvim/lazy/mason-lspconfig.nvim",
+        "/home/aikixd/.local/share/nvim/lazy/catppuccin",
+        "/tmp/.mount_nvim.aBhcCb8/usr/share/nvim/runtime",
+        "/tmp/.mount_nvim.aBhcCb8/usr/share/nvim/runtime/pack/dist/opt/matchit",
+        "/tmp/.mount_nvim.aBhcCb8/usr/lib/nvim",
+        "/home/aikixd/.local/state/nvim/lazy/readme",
+        "/home/aikixd/.local/share/nvim/lazy/cmp-buffer/after",
+        "/home/aikixd/.local/share/nvim/lazy/catppuccin/after",
+        "${3rd}/luassert/library"
+    ]
+}

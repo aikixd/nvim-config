@@ -8,7 +8,7 @@ return {
     dependencies = { 'nvim-lua/plenary.nvim' },
     keys =
       util.map(
-        config.get_keys_filtered('telescope'),
+        config.mapping.get_filtered('telescope'),
         util.key_canon_to_lazy
       ),
     opts = {
@@ -20,7 +20,7 @@ return {
           n = {
             ["u"] = "preview_scrolling_up",
             ["m"] = "preview_scrolling_down",
-            ["q"] = "actions.close",
+            ["q"] = "close",
           }
         }
       }
@@ -50,7 +50,7 @@ return {
     cmd = "Neotree",
     keys =
       util.map(
-        config.get_keys_filtered('neo-tree'),
+        config.mapping.get_filtered('neo-tree'),
         util.key_canon_to_lazy
       ),
     opts = {
@@ -90,6 +90,10 @@ return {
           ["s"] = {
             "open_vsplit",
             desc = "Open in new v-split"
+          },
+          ["g"] = {
+            "open",
+            desc = "Open"
           },
           -- ["s"] = "vsplit_with_window_picker",
           ["t"] = {
@@ -183,7 +187,6 @@ return {
       if defaults.sources["document_symbols"] == nil then
         defaults.sources[#defaults.sources + 1] = "document_symbols"
         opts.sources = defaults.sources
-        vim.print(vim.inspect(opts))
       else
         vim.notify("Document symbols were added to neotree, remove the addition in config.", vim.log.levels.WARN)
       end

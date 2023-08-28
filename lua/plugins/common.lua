@@ -1,7 +1,6 @@
 local config = require("config")
 
 return { 
-
   -- Handle vim.ui.select and vim.ui.input
   {
     'stevearc/dressing.nvim',
@@ -15,7 +14,6 @@ return {
       }
     },
   },
-
   -- Key helper
   {
     "folke/which-key.nvim",
@@ -33,7 +31,7 @@ return {
     config = function (_, otps)
       local wk = require("which-key")
       wk.setup(opts)
-      wk.register(config.key_groups)
+      wk.register(config.mapping.groups)
     end
   },
 
@@ -55,12 +53,12 @@ return {
 --     end
 --  },
   {
-    "catppuccin/nvim", 
-    name = "catppuccin", 
+    "catppuccin/nvim",
+    name = "catppuccin",
     lazy = false,
-    priority = 1000,
+    priority = config.plugin_priorities.legendary,
     config = function ()
-      vim.cmd('colorscheme catppuccin-mocha')
+      vim.cmd('colorscheme catppuccin-macchiato')
     end
   }
 }

@@ -6,9 +6,11 @@ return {
   {
     "williamboman/mason-lspconfig.nvim",
     opts = {
-      ensure_installed = { "lua_ls" }
+      ensure_installed = { "lua_ls", "rust_analyzer" }
     }
   },
+
+  -- LSP
   {
     "neovim/nvim-lspconfig",
     event = { "BufReadPre", "BufNewFile" },
@@ -20,10 +22,10 @@ return {
     config = function (lspc, _)
       -- require("mason").setup()
       -- require("mason-lspconfig").setup()
-
       vim.api.nvim_create_autocmd(
         'LspAttach',
-        { callback = function(args)
+        { 
+          callback = function(args)
             local buffer = args.buf
             vim.bo[buffer].omnifunc = 'v:lua.vim.lsp.omnifunc'
 
@@ -35,44 +37,47 @@ return {
         }
       )
 
-      local capabilities =
-        vim
-        .tbl_deep_extend(
-          "force",
-          {},
-          vim.lsp.protocol.make_client_capabilities(),
-          require("cmp_nvim_lsp").default_capabilities())
+      -- Extend client capabilities with cmp-nvim
+      local base_capabilities = vim .tbl_deep_extend( "force",
+        vim.lsp.protocol.make_client_capabilities(),
+        require("cmp_nvim_lsp").default_capabilities())
 
       -- Lua
-      require('lspconfig').lua_ls.setup({
-        capabilities = capabilities,
-        on_init = function(client)
-          local path = client.workspace_folders[1].name
+      local lua_config = require('plugins/lsp/configs/lua').lspconfig
+      lua_config.capabilities = vim .tbl_deep_extend( 'force',
+        base_capabilities,
+        lua_config.capabilities or {})
+      require('lspconfig').lua_ls.setup(lua_config);
 
-          if not vim.loop.fs_stat(path..'/.luarc.json') and not vim.loop.fs_stat(path..'/.luarc.jsonc') then
-            client.config.settings.Lua = vim.tbl_deep_extend('force', client.config.settings.Lua, {
-              runtime = {
-                -- Tell the language server which version of Lua you're using (most likely LuaJIT in the case of Neovim)
-                version = 'LuaJIT'
-              },
-              -- Make the server aware of Neovim runtime files
-              workspace = {
-                -- library = { vim.env.VIMRUNTIME }
-                -- or pull in all of 'runtimepath'. NOTE: this is a lot slower
-                library = vim.api.nvim_get_runtime_file("", true),
+      -- Rust is configured via rust-tools
+    end
+  },
 
-                -- Disables question caused by environment emulation
-                -- https://github.com/LuaLS/lua-language-server/discussions/1688
-                -- https://github.com/neovim/nvim-lspconfig/issues/1700
-                checkThirdParty = false
-              },
-            })
+  -- Rust
+  {
+    'simrat39/rust-tools.nvim',
+    dependencies = {
+      'mason.nvim'
+    },
+    event = 'VeryLazy',
+    config = function(_, _)
+      local rt = require('rust-tools')
 
-            client.notify("workspace/didChangeConfiguration", { settings = client.config.settings })
+      local lldb = require('mason-registry').get_package('codelldb')
+      local install_path = lldb:get_install_path()
+      local codelldb_path = install_path .. '/extension/adapter/codelldb'
+      local liblldb_path = install_path .. '/extension/lldb/lib/liblldb.so'
+
+      rt.setup({
+        server = {
+          on_attach = function (_, buffer)
+            vim.keymap.set("n", "<leader>ca", rt.code_action_group.code_action_group, { buffer = buffer })
           end
-          return true
-        end
-      });
+        },
+        dap = {
+          adapter = require('rust-tools.dap').get_codelldb_adapter(codelldb_path, liblldb_path)
+        }
+      })
     end
   }
 }

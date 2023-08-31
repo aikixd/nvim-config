@@ -3,8 +3,17 @@ local M = {}
 local function mk_map(mode, lhs, rhs, opts, ctx)
   if type(opts) == "string" then opts = { desc = opts } end
 
+  if type(mode) == "table" then
+    mode = table.concat(mode)
+  end
+
+  local chars = {}
+  for i = 1, #mode do
+    table.insert(chars, mode:sub(i, i))
+  end
+
   return {
-    mode = mode,
+    mode = chars,
     lhs = lhs,
     rhs = rhs,
     opts = opts,
@@ -30,14 +39,17 @@ M.keys = {
     mk_map({ "v" }, "<C-\\>", function () require("which-key").show_command(nil, "v") end, "Which key"),
     mk_map({ "i" }, "<C-\\>", function () require("which-key").show_command(nil, "i") end, "Which key"),
     mk_map({ "o" }, "<C-\\>", function () require("which-key").show_command(nil, "o") end, "Which key"),
+    mk_map({ "vio" }, "<C-s>", "<cmd>w<cr>", "Write"),
+    mk_map("n", "<C-I>", "<cmd>IconPickerNormal<cr>", "Insert symbol", "icons"),
+    mk_map("i", "<C-i>", "<cmd>IconPickerInsert<cr>", "Insert symbol", "icons"),
     mk_map({ "i" }, "<C-k>", function () vim.lsp.buf.signature_help() end, "Autocomplete", 'lsp'),
     mk_map({ "n", "i", "v", "o" }, "<C-s>", "<cmd>w<cr><esc>", "Write buffer"),
 
     -- Section: hjkl
-    mk_map({ "n" }, "<C-l>", "<C-w><C-l>", "To right window"),
-    mk_map({ "n" }, "<C-h>", "<C-w><C-h>", "To left window"),
-    mk_map({ "n" }, "<C-j>", "<C-w><C-j>", "To lower window"),
-    mk_map({ "n" }, "<C-k>", "<C-w><C-k>", "To upper window"),
+    mk_map({ "n", "i" }, "<C-l>", "<esc><C-w><C-l>", "To right window"),
+    mk_map({ "n", "i" }, "<C-h>", "<esc><C-w><C-h>", "To left window"),
+    mk_map({ "n", "i" }, "<C-j>", "<esc><C-w><C-j>", "To lower window"),
+    mk_map({ "n", "i" }, "<C-k>", "<esc><C-w><C-k>", "To upper window"),
 
 
     mk_map({ "n", "v" }, "0", "col('.') == 1 ? '^' : '0'", { desc = "Home", expr = true }),
@@ -57,6 +69,7 @@ M.keys = {
     mk_map("v", "<A-k>", ":m '<-2<cr>gv=gv", { desc = "Move up" }),
 
     mk_map({ "n", "v", "o" }, "K", function () vim.lsp.buf.signature_help() end, "Symbol info", 'lsp'),
+    mk_map({ "n", "v", "o" }, "q",  "<cmd>IconPickerNormal<cr>", "Symbol info", 'lsp'),
 
     -- Section: g
     mk_map({ "n" }, "gd", function() vim.lsp.buf.definition() end, "Code action", "lsp"),
@@ -66,6 +79,11 @@ M.keys = {
     mk_map({ "n" }, "<leader>cd", function() vim.diagnostic.open_float({ source = true, border = 'rounded' }) end, "Show diagnostics"),
     mk_map({ "n", "v", "o" }, "<leader>cc", function () vim.lsp.buf.signature_help() end, "Symbol info", 'lsp'),
     mk_map({ "n" }, "<leader>co", ":Neotree document_symbols<cr>", "Source outline", "neo-tree"),
+
+    -- Section: <leader>d
+    mk_map("n", "<leader>du", function() require("dapui").toggle() end, "Toggle debug ui", "dap-ui"),
+    mk_map("n", "<leader>dv", function() require("dap").toggle_breakpoint() end, "Toggle breakpoint", "dap"),
+    mk_map("n", "<leader>ds", function() require("dap").continue() end, "Continue", "dap"),
 
     -- Section: <leader>f
     mk_map({ "n", "v" }, "<leader>fb", ":Telescope buffers<cr>", "Find buffer", "telescope"),
@@ -91,6 +109,14 @@ M.keys = {
     mk_map("n", "<C-Left>", "<cmd>vertical resize -2<cr>", { desc = "Decrease window width" }),
     mk_map("n", "<C-Right>", "<cmd>vertical resize +2<cr>", { desc = "Increase window width" }),
 
+    -- Terminal Mappings
+    mk_map("t", "<esc><esc>", "<c-\\><c-n>", { desc = "Normal Mode" }),
+    mk_map("t", "<C-h>", "<cmd>wincmd h<cr>", { desc = "To left window" }),
+    mk_map("t", "<C-j>", "<cmd>wincmd j<cr>", { desc = "To lower window" }),
+    mk_map("t", "<C-k>", "<cmd>wincmd k<cr>", { desc = "To upper window" }),
+    mk_map("t", "<C-l>", "<cmd>wincmd l<cr>", { desc = "To right window" }),
+    mk_map("t", "<C-/>", "<cmd>close<cr>", { desc = "Hide Terminal" }),
+    mk_map("t", "<c-_>", "<cmd>close<cr>", { desc = "which_key_ignore" }),
   },
 }
 

@@ -1,7 +1,7 @@
 local M = {}
 
 M.plugin_priorities = {
-  legendary = 10000
+  colorscheme = 10000
 }
 
 M.mapping = require('config.mapping')
@@ -10,11 +10,23 @@ M.mapping = require('config.mapping')
 function M.setup(opts)
   vim.g.mapleader = " "
   vim.g.maplocalleader = " "
-  
 
+  vim.opt.background = "dark"
+  vim.opt.cmdheight = 0
+  vim.opt.colorcolumn = "100"
+  vim.opt.confirm = true
+  vim.opt.cursorlineopt = "both"
+  vim.opt.cursorline = true
+  vim.opt.foldenable = false
+  vim.opt.foldexpr = "nvim_treesitter#foldexpr()"
+  vim.opt.foldmethod = "expr"
+  vim.opt.ignorecase = true
   vim.opt.list = true
   vim.opt.number = true
-  vim.opt.scrolloff = 4
+  vim.opt.relativenumber = true
+  vim.opt.scrolloff = 7
+  vim.opt.signcolumn = "yes:1"
+  vim.opt.termguicolors = true
   vim.opt.virtualedit = "block"
   vim.opt.wrap = false
 

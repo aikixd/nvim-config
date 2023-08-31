@@ -29,9 +29,13 @@ return {
   {
     'echasnovski/mini.nvim',
     version = false,
+    event = "VeryLazy",
     config = function(_, _)
       require('mini.indentscope').setup({
         symbol = '│'
+      })
+
+      require('mini.comment').setup({
       })
     end
   },
@@ -202,4 +206,8 @@ return {
     --  end
     --end,
   },
+  {
+    'lewis6991/gitsigns.nvim',
+    opts = {}
+  }
 }

@@ -17,15 +17,12 @@ cfg.setup()
 
 require("lazy").setup({
   spec = {
-    { import = "plugins/common" },
-    { import = "plugins/editor" },
+    { import = "plugins" },
+    -- { import = "plugins/editor" },
     { import = "plugins/lsp" },
-    { import = "plugins/code" }
+    -- { import = "plugins/code" }
   }
-}
+})
 
-
-
-)
 
 cfg.set_keys()

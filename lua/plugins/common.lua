@@ -297,6 +297,20 @@ return {
         c.diagnostic_hints,
       }
 
+
+      local left_x = {
+        c.gitBranch,
+        c.gitDiffAdded,
+        c.gitDiffRemoved,
+        c.gitDiffChanged,
+        c.separator,
+        c.fileinfo,
+        c.diagnostic_errors,
+        c.diagnostic_warnings,
+        c.diagnostic_info,
+        c.diagnostic_hints,
+      }
+
       local middle = {
       }
 
@@ -316,7 +330,7 @@ return {
           right,
         },
         inactive = {
-          left,
+          left_x,
           middle,
           right,
         },

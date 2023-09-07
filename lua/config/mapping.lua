@@ -1,7 +1,7 @@
 local M = {}
 
 local function mk_map(mode, lhs, rhs, opts, ctx)
-  if type(opts) == "string" then opts = { desc = opts } end
+  if type(opts) == "string" then opts = { desc = opts, noremap = true } end
 
   if type(mode) == "table" then
     mode = table.concat(mode)
@@ -34,7 +34,8 @@ M.groups = {
 
 M.keys = {
   common = {
-    mk_map({ "n", "v" }, "<esc>", ":noh<cr><esc>", "Escape and clear hlsearch"),
+    mk_map("nvio", "<C-1>", function () vim.print(vim.api.nvim_get_mode()) end, "DEBUG: print mode"),
+    mk_map("n", "<esc>", ":noh<cr><esc>", "Escape and clear hlsearch"),
     mk_map({ "n" }, "<C-\\>", function () require("which-key").show_command(nil, "n") end, "Which key"),
     mk_map({ "v" }, "<C-\\>", function () require("which-key").show_command(nil, "v") end, "Which key"),
     mk_map({ "i" }, "<C-\\>", function () require("which-key").show_command(nil, "i") end, "Which key"),
@@ -50,6 +51,8 @@ M.keys = {
     mk_map({ "n", "i" }, "<C-h>", "<esc><C-w><C-h>", "To left window"),
     mk_map({ "n", "i" }, "<C-j>", "<esc><C-w><C-j>", "To lower window"),
     mk_map({ "n", "i" }, "<C-k>", "<esc><C-w><C-k>", "To upper window"),
+    mk_map("nvoi", "<A-u>", "<C-y>", "Scroll up"),
+    mk_map("nvoi", "<A-m>", "<C-e>", "Scroll down"),
 
 
     mk_map({ "n", "v" }, "0", "col('.') == 1 ? '^' : '0'", { desc = "Home", expr = true }),
@@ -74,6 +77,11 @@ M.keys = {
     -- Section: g
     mk_map({ "n" }, "gd", function() vim.lsp.buf.definition() end, "Code action", "lsp"),
 
+    -- Section: <leader>b
+    mk_map("nvo", "<leader>bb", "<cmd>bn<cr>", "Other buffer"),
+    mk_map("nvo", "<leader>bd", "<cmd>bn | bd #<cr>", "Delete buffer"),
+    mk_map("nvo", "<leader>bf", ":Telescope buffers<cr>", "Find buffer", "telescope"),
+
     -- Section: <leader>c
     mk_map({ "n" }, "<leader>ca", function() vim.lsp.buf.code_action() end, "Code action", "lsp"),
     mk_map({ "n" }, "<leader>cd", function() vim.diagnostic.open_float({ source = true, border = 'rounded' }) end, "Show diagnostics"),
@@ -97,6 +105,7 @@ M.keys = {
     -- Section: <leader>m
     mk_map({ "n", "v" }, "<leader>mh", ":Telescope help_tags<cr>", "Search help tags", "telescope"),
     mk_map({ "n", "v" }, "<leader>ml", "<cmd>Lazy<cr>", "Plugin mgmt"),
+    mk_map("nvo", "<leader>mq", "<cmd>qa<cr>", "Exit"),
 
     -- Section: <leader>s
     mk_map({ "n", "v" }, "<leader>sf", ":Telescope current_buffer_fuzzy_find<cr>", "Search here", "telescope"),

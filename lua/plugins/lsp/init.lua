@@ -54,6 +54,7 @@ return {
   },
 
   -- Rust
+  -- Techically this is more than an LSP, perhaps a different location may suit better
   {
     'simrat39/rust-tools.nvim',
     dependencies = {

@@ -34,16 +34,15 @@ M.groups = {
 
 M.keys = {
   common = {
-    mk_map("nvio", "<C-1>", function () vim.print(vim.api.nvim_get_mode()) end, "DEBUG: print mode"),
     mk_map("n", "<esc>", ":noh<cr><esc>", "Escape and clear hlsearch"),
-    mk_map({ "n" }, "<C-\\>", function () require("which-key").show_command(nil, "n") end, "Which key"),
-    mk_map({ "v" }, "<C-\\>", function () require("which-key").show_command(nil, "v") end, "Which key"),
-    mk_map({ "i" }, "<C-\\>", function () require("which-key").show_command(nil, "i") end, "Which key"),
-    mk_map({ "o" }, "<C-\\>", function () require("which-key").show_command(nil, "o") end, "Which key"),
-    mk_map({ "vio" }, "<C-s>", "<cmd>w<cr>", "Write"),
+    -- mk_map("i", "<C-Space>", function () require('cmp').mapping.complete() end, "Autocomplete", "cmp"),
+    mk_map("n", "<C-\\>", function () require("which-key").show_command(nil, "n") end, "Which key"),
+    mk_map("v", "<C-\\>", function () require("which-key").show_command(nil, "v") end, "Which key"),
+    mk_map("i", "<C-\\>", function () require("which-key").show_command(nil, "i") end, "Which key"),
+    mk_map("o", "<C-\\>", function () require("which-key").show_command(nil, "o") end, "Which key"),
+    mk_map("vi", "<C-s>", "<cmd>w<cr>", "Write"),
     mk_map("n", "<C-I>", "<cmd>IconPickerNormal<cr>", "Insert symbol", "icons"),
     mk_map("i", "<C-i>", "<cmd>IconPickerInsert<cr>", "Insert symbol", "icons"),
-    mk_map({ "i" }, "<C-k>", function () vim.lsp.buf.signature_help() end, "Autocomplete", 'lsp'),
     mk_map({ "n", "i", "v", "o" }, "<C-s>", "<cmd>w<cr><esc>", "Write buffer"),
 
     -- Section: hjkl
@@ -71,11 +70,16 @@ M.keys = {
     mk_map("v", "<A-j>", ":m '>+1<cr>gv=gv", { desc = "Move down" }),
     mk_map("v", "<A-k>", ":m '<-2<cr>gv=gv", { desc = "Move up" }),
 
-    mk_map({ "n", "v", "o" }, "K", function () vim.lsp.buf.signature_help() end, "Symbol info", 'lsp'),
-    mk_map({ "n", "v", "o" }, "q",  "<cmd>IconPickerNormal<cr>", "Symbol info", 'lsp'),
+    mk_map("nvio", "<C-k>", function () vim.lsp.buf.signature_help() end, "Signature help", 'lsp'),
+    mk_map("nvo", "K", function () vim.lsp.buf.hover() end, "Symbol info", 'lsp'),
+    -- mk_map({ "n", "v", "o" }, "q",  "<cmd>IconPickerNormal<cr>", "Symbol info", 'lsp'),
 
     -- Section: g
-    mk_map({ "n" }, "gd", function() vim.lsp.buf.definition() end, "Code action", "lsp"),
+    mk_map({ "n" }, "gd", function() vim.lsp.buf.definition() end, "Go to definition", "lsp"),
+    mk_map("n", "gh", "<cmd>Telescope lsp_references<cr>", "Go to references", "lsp"),
+    mk_map("n", "gi", "<cmd>Telescope lsp_implementations<cr>", "Go to implementations", "lsp"),
+    mk_map("n", "gj", "<cmd>Telescope lsp_definitions<cr>", "Go to definitions", "lsp"),
+    mk_map("n", "gk", "<cmd>Telescope lsp_type_definitions<cr>", "Go to type definitions", "lsp"),
 
     -- Section: <leader>b
     mk_map("nvo", "<leader>bb", "<cmd>bn<cr>", "Other buffer"),
@@ -87,6 +91,11 @@ M.keys = {
     mk_map({ "n" }, "<leader>cd", function() vim.diagnostic.open_float({ source = true, border = 'rounded' }) end, "Show diagnostics"),
     mk_map({ "n", "v", "o" }, "<leader>cc", function () vim.lsp.buf.signature_help() end, "Symbol info", 'lsp'),
     mk_map({ "n" }, "<leader>co", ":Neotree document_symbols<cr>", "Source outline", "neo-tree"),
+    mk_map("n", "<leader>ch", "<cmd>TroubleToggle lsp_references<cr>", "List references", "trouble"),
+    mk_map("n", "<leader>cj", "<cmd>TroubleToggle lsp_definitions<cr>", "List definitions", "trouble"),
+    mk_map("n", "<leader>ck", "<cmd>TroubleToggle lsp_type_definitions<cr>", "List type definitionsni", "trouble"),
+    mk_map("n", "<leader>cx", "<cmd>TroubleToggle document_diagnostics<cr>", "Document diagnostics", "trouble"),
+    mk_map("n", "<leader>cX", "<cmd>TroubleToggle workspace_diagnostics<cr>", "Workspace diagnostics", "trouble"),
 
     -- Section: <leader>d
     mk_map("n", "<leader>du", function() require("dapui").toggle() end, "Toggle debug ui", "dap-ui"),

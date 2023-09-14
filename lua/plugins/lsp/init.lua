@@ -72,7 +72,8 @@ return {
       rt.setup({
         server = {
           on_attach = function (_, buffer)
-            vim.keymap.set("n", "<leader>ca", rt.code_action_group.code_action_group, { buffer = buffer })
+            -- TODO: make overrides by lhs
+            vim.keymap.set("n", "<leader>ca", rt.code_action_group.code_action_group, { buffer = buffer, desc = "Code action" })
           end
         },
         dap = {

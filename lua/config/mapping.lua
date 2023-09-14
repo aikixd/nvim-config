@@ -82,7 +82,7 @@ M.keys = {
     mk_map("n", "gk", "<cmd>Telescope lsp_type_definitions<cr>", "Go to type definitions", "lsp"),
 
     -- Section: <leader>b
-    mk_map("nvo", "<leader>bb", "<cmd>bn<cr>", "Other buffer"),
+    mk_map("nvo", "<leader>bb", "<cmd>b#<cr>", "Other buffer"),
     mk_map("nvo", "<leader>bd", "<cmd>bn | bd #<cr>", "Delete buffer"),
     mk_map("nvo", "<leader>bf", ":Telescope buffers<cr>", "Find buffer", "telescope"),
 
@@ -98,9 +98,15 @@ M.keys = {
     mk_map("n", "<leader>cX", "<cmd>TroubleToggle workspace_diagnostics<cr>", "Workspace diagnostics", "trouble"),
 
     -- Section: <leader>d
+    mk_map("n", "<leader>da", function() require("dap").continue() end, "Continue", "dap"),
+    mk_map("n", "<leader>de", function() require("dap").run_to_cursor() end, "Run to cursor", "dap"),
+    mk_map("n", "<leader>dd", function() require("dap").step_over() end, "Step over", "dap"),
+    mk_map("n", "<leader>df", function() require("dap").step_into() end, "Step into", "dap"),
+    mk_map("n", "<leader>dg", function() require("dap").step_out() end, "Step out", "dap"),
+    mk_map("n", "<leader>ds", function() require("dap").pause() end, "Pause", "dap"),
     mk_map("n", "<leader>du", function() require("dapui").toggle() end, "Toggle debug ui", "dap-ui"),
     mk_map("n", "<leader>dv", function() require("dap").toggle_breakpoint() end, "Toggle breakpoint", "dap"),
-    mk_map("n", "<leader>ds", function() require("dap").continue() end, "Continue", "dap"),
+    mk_map("n", "<leader>dt", function() require("dap").terminate() end, "Continue", "dap"),
 
     -- Section: <leader>f
     mk_map({ "n", "v" }, "<leader>fb", ":Telescope buffers<cr>", "Find buffer", "telescope"),

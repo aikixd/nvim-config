@@ -129,9 +129,20 @@ return {
             },
           },
           hl = function()
+            local mode_color = mode_colors[vim.api.nvim_get_mode().mode]
+
+            if mode_color == nil
+            then
+              vim.api.nvim_notify(
+                "No color found for mode '" .. vim.api.nvim_get_mode().mode .. "'",
+                vim.log.levels.WARN,
+                {})
+              mode_color = mode_colors['n']
+            end
+
             return {
               fg = sett.text,
-              bg = mode_colors[vim.api.nvim_get_mode().mode][2],
+              bg = mode_color[2],
               style = "bold",
               --name = "NeovimModeHLColor",
             }
@@ -183,7 +194,7 @@ return {
           provider = {
             name = "file_info",
             opts = {
-              type = "relative-short",
+              type = "relative",
             },
           },
           hl = {

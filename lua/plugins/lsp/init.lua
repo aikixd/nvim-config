@@ -29,6 +29,15 @@ return {
             local buffer = args.buf
             vim.bo[buffer].omnifunc = 'v:lua.vim.lsp.omnifunc'
 
+            -- Some keybinds require telescope to work, but are not mapped to it
+            -- so will fail to execute since telescope may not yet be loaded.
+            -- Hense, we're loading it here.
+            local lazy_cfg = require("lazy.core.config")
+            require("lazy.core.loader").load(
+              { lazy_cfg.plugins["telescope.nvim"] },
+              { cmd = "LspAttach load" },
+              { force = false })
+
             for _, k in ipairs(require('config').mapping.get_filtered('lsp')) do
               k.opts.buffer = buffer
               vim.keymap.set(k.mode, k.lhs, k.rhs, k.opts)

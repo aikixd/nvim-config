@@ -43,8 +43,8 @@ M.keys = {
     mk_map("nvo", "<M-,>", "<C-o>", "Back"),
     mk_map("nvo", "<M-.>", "<C-i>", "Forward"),
     mk_map("vi", "<C-s>", "<cmd>w<cr>", "Write"),
-    mk_map("n", "<C-I>", "<cmd>IconPickerNormal<cr>", "Insert symbol", "icons"),
-    mk_map("i", "<C-i>", "<cmd>IconPickerInsert<cr>", "Insert symbol", "icons"),
+    -- mk_map("n", "<C-I>", "<cmd>IconPickerNormal<cr>", "Insert symbol", "icons"),
+    -- mk_map("i", "<C-i>", "<cmd>IconPickerInsert<cr>", "Insert symbol", "icons"),
     mk_map("nvio", "<C-q>", function () vim.lsp.buf.signature_help() end, "Signature help", 'lsp'),
     mk_map("nivo", "<C-s>", "<cmd>w<cr><esc>", "Write buffer"),
     mk_map("n",   "<C-z>", "u", "Undo"),
@@ -62,7 +62,8 @@ M.keys = {
     mk_map("nv",  "0", "col('.') == 1 ? '^' : '0'", { desc = "Home", expr = true }),
     mk_map("nvo", "u", "<C-u>", "Scroll up"),
     mk_map("nvo", "m", "<C-d>", "Scroll down"),
-    mk_map("nvo", "q", function () vim.lsp.buf.hover() end, "Symbol info", 'lsp'),
+    mk_map("nvo", "q", vim.lsp.buf.hover, "Symbol info", 'lsp'),
+
     mk_map("nvo", "w", "b", "Previous word"),
     mk_map("nvo", "W", "B", "Previous WORD"),
 
@@ -96,6 +97,7 @@ M.keys = {
     mk_map("n", "<leader>ch", "<cmd>TroubleToggle lsp_references<cr>", "List references", "trouble"),
     mk_map("n", "<leader>cj", "<cmd>TroubleToggle lsp_definitions<cr>", "List definitions", "trouble"),
     mk_map("n", "<leader>ck", "<cmd>TroubleToggle lsp_type_definitions<cr>", "List type definitionsni", "trouble"),
+    mk_map("n", "<leader>cr", vim.lsp.buf.rename, "Rename", "lsp"),
     mk_map("n", "<leader>cx", "<cmd>TroubleToggle document_diagnostics<cr>", "Document diagnostics", "trouble"),
     mk_map("n", "<leader>cX", "<cmd>TroubleToggle workspace_diagnostics<cr>", "Workspace diagnostics", "trouble"),
 

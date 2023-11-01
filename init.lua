@@ -11,11 +11,11 @@ if not vim.loop.fs_stat(lazypath) then
 end
 vim.opt.rtp:prepend(lazypath)
 
-vim.cmd([[nnoremap <C-i> <C-i> ]])
-vim.cmd([[inoremap <C-i> <C-i> ]])
-
-vim.cmd([[nnoremap <Tab> :echo "TAB"<cr>]])
-vim.cmd([[nnoremap <C-i> :echo "C-I"<cr>]])
+-- vim.cmd([[nnoremap <C-i> <C-i> ]])
+-- vim.cmd([[inoremap <C-i> <C-i> ]])
+--
+-- vim.cmd([[nnoremap <Tab> :echo "TAB"<cr>]])
+-- vim.cmd([[nnoremap <C-i> :echo "C-I"<cr>]])
 local cfg = require("config")
 cfg.setup()
 

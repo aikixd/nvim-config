@@ -1,6 +1,6 @@
 local config = require("config")
 
-return { 
+return {
   -- Handle vim.ui.select and vim.ui.input
   {
     'stevearc/dressing.nvim',
@@ -28,7 +28,7 @@ return {
       -- refer to the configuration section below
       hidden = {},
     },
-    config = function (_, otps)
+    config = function (_, opts)
       local wk = require("which-key")
       wk.setup(opts)
       wk.register(config.mapping.groups)
@@ -95,17 +95,17 @@ return {
         ["!"] = { "SHELL", C.green },
       }
       local one_monokai = {
-        fg = "#abb2bf",
-        bg = "#1e2024",
-        green = "#98c379",
-        yellow = "#e5c07b",
-        purple = "#c678dd",
-        orange = "#d19a66",
+        fg = C.text,
+        bg = C.mantle,
+        green = C.green,
+        yellow = C.yellow,
+        purple = C.mauve,
+        orange = C.peach,
         peanut = "#f6d5a4",
-        red = "#e06c75",
-        aqua = "#61afef",
-        darkblue = "#282c34",
-        dark_red = "#f75f5f",
+        red = C.red,
+        aqua = C.sapphire,
+        darkblue = C.crust,
+        dark_red = C.flamingo,
       }
 
       local vi_mode_colors = {
@@ -195,6 +195,12 @@ return {
             name = "file_info",
             opts = {
               type = "relative",
+            },
+          },
+          short_provider = {
+            name = "file_info",
+            opts = {
+              type = "relative-short",
             },
           },
           hl = {
@@ -288,15 +294,16 @@ return {
             }
           },
           hl = {
-            fg = "yellow",
+            fg = "bg",
+            bg = "yellow",
             style = "bold",
           },
         },
       }
 
       local left = {
-        c.vim_mode,
-        c.gitBranch,
+        -- c.vim_mode,
+        -- c.gitBranch,
         c.gitDiffAdded,
         c.gitDiffRemoved,
         c.gitDiffChanged,
@@ -310,7 +317,7 @@ return {
 
 
       local left_x = {
-        c.gitBranch,
+        -- c.gitBranch,
         c.gitDiffAdded,
         c.gitDiffRemoved,
         c.gitDiffChanged,
@@ -347,8 +354,25 @@ return {
         },
       }
 
+      local c_components = {
+        {
+          condition = function ()
+            return vim.api.nvim_buf_get_option(0, 'filetype') == 'neo-tree'
+          end,
+          active = {
+            {},
+            { c.file_type },
+          },
+          inactive = {
+            {},
+            { c.file_type }
+          }
+        }
+      }
+
       require('feline').setup({
         components = components,
+        conditional_components = c_components,
         theme = one_monokai,
         vi_mode_colors = vi_mode_colors,
       })

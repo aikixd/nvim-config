@@ -78,6 +78,8 @@ return {
       local codelldb_path = install_path .. '/extension/adapter/codelldb'
       local liblldb_path = install_path .. '/extension/lldb/lib/liblldb.so'
 
+      local adapter = require('rust-tools.dap').get_codelldb_adapter(codelldb_path, liblldb_path)
+
       rt.setup({
         tools = {
           hover_actions = {
@@ -92,7 +94,7 @@ return {
           end
         },
         dap = {
-          adapter = require('rust-tools.dap').get_codelldb_adapter(codelldb_path, liblldb_path)
+          adapter = adapter
         }
       })
     end

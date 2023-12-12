@@ -11,7 +11,15 @@ return {
     ),
     dependencies = {
       'nvim-dap-ui'
-    }
+    },
+    config = function ()
+      local dap = require('dap')
+
+      dap.defaults.rt_lldb.exception_breakpoints = {'rust_panic'}
+      dap.repl.commands.help = { '.help', '.h' }
+
+      -- dap.set_exception_breakpoints({'rust_panic'})
+    end
   },
   {
     'rcarriga/nvim-dap-ui',

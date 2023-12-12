@@ -79,11 +79,14 @@ return {
           end
         },
         mapping = cmp.mapping.preset.insert({
-          ['<C-b>'] = cmp.mapping.scroll_docs(-4),
-          ['<C-f>'] = cmp.mapping.scroll_docs(4),
           ['<C-Space>'] = cmp.mapping.complete(),
           ['<C-e>'] = cmp.mapping.abort(),
           ['<CR>'] = cmp.mapping.confirm({ select = false, }), -- Accept currently selected item. Set `select` to `false` to only confirm explicitly selected items.
+          ['<Tab>'] = cmp.mapping.confirm({ select = true }),
+          ['<M-j>'] = cmp.mapping.select_next_item({ behavior = cmp.SelectBehavior.Select }),
+          ['<M-k>'] = cmp.mapping.select_prev_item({ behavior = cmp.SelectBehavior.Select }),
+          ['<M-u>'] = cmp.mapping.scroll_docs(-4),
+          ['<M-m>'] = cmp.mapping.scroll_docs(4),
         }),
         snippet = {
           expand = function(args)
@@ -110,8 +113,34 @@ return {
     end
   },
 
+  -- Highlights
+  {
+    "RRethy/vim-illuminate",
+    opts = {
+      providers = {
+        'lsp',
+        'treesitter',
+        'regex',
+      },
+      large_file_cutoff = 2500,
+      large_file_overrides = { 'lsp' },
+    },
+    config = function (_, opts)
+      local plugin = require('illuminate')
+      plugin.configure(opts)
+
+      vim.api.nvim_create_autocmd("FileType", {
+        callback = function()
+          local buffer = vim.api.nvim_get_current_buf()
+          vim.keymap.set("n", "]]", function() plugin.goto_next_reference(false) end, { buffer = buffer, desc = "Next occurence" })
+          vim.keymap.set("n", "[[", function() plugin.goto_prev_reference(false) end, { buffer = buffer, desc = "Prev occurence" })
+        end,
+      })
+    end,
+  },
   {
     "nvim-treesitter/nvim-treesitter",
+    -- enabled = false,
     version = false, -- last release is way too old and doesn't work on Windows
     build = ":TSUpdate",
     dependencies = {

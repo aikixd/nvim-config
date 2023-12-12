@@ -26,7 +26,16 @@ M.lspconfig = {
       client.notify("workspace/didChangeConfiguration", { settings = client.config.settings })
     end
     return true
-  end
+  end,
+
+  settings = {
+    Lua = {
+      diagnostics = {
+        -- Get the language server to recognize the `vim` global
+        globals = {'vim'},
+      },
+    },
+  }
 }
 
 return M

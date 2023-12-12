@@ -37,6 +37,7 @@ return {
 
   {
     'freddiehaddad/feline.nvim',
+    enabled = true,
     dependencies = {
       'catppuccin'
     },
@@ -94,7 +95,7 @@ return {
         ["r?"] = { "CONFIRM", C.mauve },
         ["!"] = { "SHELL", C.green },
       }
-      local one_monokai = {
+      local theme = {
         fg = C.text,
         bg = C.mantle,
         green = C.green,
@@ -302,8 +303,8 @@ return {
       }
 
       local left = {
-        -- c.vim_mode,
-        -- c.gitBranch,
+        c.vim_mode,
+        c.gitBranch,
         c.gitDiffAdded,
         c.gitDiffRemoved,
         c.gitDiffChanged,
@@ -317,7 +318,6 @@ return {
 
 
       local left_x = {
-        -- c.gitBranch,
         c.gitDiffAdded,
         c.gitDiffRemoved,
         c.gitDiffChanged,
@@ -373,7 +373,7 @@ return {
       require('feline').setup({
         components = components,
         conditional_components = c_components,
-        theme = one_monokai,
+        theme = theme,
         vi_mode_colors = vi_mode_colors,
       })
     end

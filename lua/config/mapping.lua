@@ -130,7 +130,7 @@ M.keys = {
     mk_map("nvio", "<C-q>", function () vim.lsp.buf.signature_help() end, "Signature help", 'lsp'),
     mk_map("nivo", "<C-s>", "<cmd>w<cr><esc>", "Write buffer"),
     mk_map("nvio",   "<C-z>", "u", "Undo"),
-    mk_map("nvio",   "<S-z>", "<C-r>", "Redo"),
+    mk_map("nvo",   "<S-z>", "<C-r>", "Redo"),
 
     -- Section: hjkl
     mk_map({ "n", "i" }, "<C-l>", "<esc><C-w><C-l>", "To right window"),

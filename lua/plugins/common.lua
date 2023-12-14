@@ -1,4 +1,5 @@
 local config = require("config")
+local util = require('util')
 
 return {
   -- Handle vim.ui.select and vim.ui.input
@@ -414,6 +415,11 @@ return {
   },
   {
     "ziontee113/icon-picker.nvim",
-    opts = { disable_legacy_commands = true }
+    opts = { disable_legacy_commands = true },
+    event = 'VeryLazy',
+    keys = util.map(
+      config.mapping.get_filtered('icons'),
+      util.key_canon_to_lazy
+    ),
   }
 }

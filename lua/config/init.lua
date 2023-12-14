@@ -36,6 +36,7 @@ function M.setup(opts)
   vim.opt.softtabstop = 2
   vim.opt.shiftwidth = 2
 
+
   require('config.map_fixes').config_netrw_explorer()
 
   vim.api.nvim_create_autocmd(
@@ -48,31 +49,6 @@ function M.setup(opts)
       end
     }
   )
-  
-  -- " vim.cmd("filetype off")
-  -- "
-  -- " vim.api.nvim_create_autocmd(
-  -- "   { "FileType" },
-  -- "   {
-  -- "     callback = function (e)
-  -- "       if e.match == 'rust' then
-  -- "         vim.print(vim.api.nvim_buf_get_var(e.buf, "did_ftplugin"))
-  -- "         vim.api.nvim_buf_set_var(e.buf, "did_ftplugin", 1)
-  -- "         vim.print("suppressed ftplugin")
-  -- "       end
-  -- "     end
-  -- "   }
-  -- " )
-  -- " vim.cmd("filetype on")
-
-  -- vim.api.nvim_create_autocmd(
-  --   { "BufReadPre", "BufNewFile" },
-  --   {
-  --     callback = function (buffer)
-  --       vim.print(buffer)
-  --     end
-  --   }
-  -- )
 
   vim.api.nvim_create_user_command(
     "CheckMap",

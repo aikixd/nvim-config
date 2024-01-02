@@ -36,6 +36,9 @@ function M.setup(opts)
   vim.opt.softtabstop = 2
   vim.opt.shiftwidth = 2
 
+  vim.keymap.set({"n","v","i","o"}, "<C-i>", "<C-i>")
+  -- vim.keymap.set({"n","v","i","o"}, "<Tab>", "<Tab>")
+  vim.keymap.set({"n"}, "<Tab>", "<Tab>")
 
   require('config.map_fixes').config_netrw_explorer()
 

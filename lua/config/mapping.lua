@@ -179,7 +179,7 @@ M.keys = {
     mk_map("n", "<leader>ca", function() vim.lsp.buf.code_action() end, "Code action", "lsp"),
     mk_map("n", "<leader>cd", function() vim.diagnostic.open_float({ source = true, border = 'rounded' }) end, "Show diagnostics"),
     mk_map("nvo", "<leader>cc", function () vim.lsp.buf.signature_help() end, "Symbol info", 'lsp'),
-    mk_map("n", "<leader>cf", "<cmd>Telescope lsp_document_symbols<cr>", "Search symbols", "lsp"),
+    mk_map("n", "<leader>cf", "<cmd>Telescope lsp_document_symbols<cr>", "Search document symbols", "lsp"),
     mk_map("n", "<leader>ch", "<cmd>TroubleToggle lsp_references<cr>", "List references", "trouble"),
     mk_map("n", "<leader>cj", "<cmd>TroubleToggle lsp_definitions<cr>", "List definitions", "trouble"),
     mk_map("n", "<leader>ck", "<cmd>TroubleToggle lsp_type_definitions<cr>", "List type definitionsni", "trouble"),

@@ -40,6 +40,8 @@ function M.setup(opts)
   -- vim.keymap.set({"n","v","i","o"}, "<Tab>", "<Tab>")
   vim.keymap.set({"n"}, "<Tab>", "<Tab>")
 
+  vim.cmd("helptags ALL")
+
   require('config.map_fixes').config_netrw_explorer()
 
   vim.api.nvim_create_autocmd(

@@ -38,10 +38,20 @@ return {
               { cmd = "LspAttach load" },
               { force = false })
 
-            for _, k in ipairs(require('config').mapping.get_filtered('lsp')) do
+            local config = require('config')
+
+            -- Generic LSP mappings
+            for _, k in ipairs(config.mapping.get_filtered('lsp')) do
               k.opts.buffer = buffer
               vim.keymap.set(k.mode, k.lhs, k.rhs, k.opts)
             end
+
+            -- Language specific mappings
+            for _, k in ipairs(config.mapping.get_filtered('lsp-' .. vim.bo.filetype)) do
+              k.opts.buffer = buffer
+              vim.keymap.set(k.mode, k.lhs, k.rhs, k.opts)
+            end
+
           end
         }
       )
@@ -69,6 +79,7 @@ return {
     dependencies = {
       'mason.nvim'
     },
+    enabled = false,
     event = 'VeryLazy',
     config = function(_, _)
       local rt = require('rust-tools')
@@ -97,6 +108,24 @@ return {
           adapter = adapter
         }
       })
+    end
+  },
+
+  -- Rust again, with different plug. This is a spiritual (and perhaps real) successor of rust-tools.
+  {
+    'mrcjkb/rustaceanvim',
+    version = '^3', -- Recommended
+    ft = { 'rust' },
+    event = 'VeryLazy',
+    config = function () 
+
+      vim.g.rustaceanvim = {
+        tools = {
+          hover_actions = {
+            replace_builtin_hover = false
+          }
+        }
+      }
     end
   }
 }

@@ -133,6 +133,12 @@ M.keys = {
     mk_map("nvio",   "<C-z>", "u", "Undo"),
     mk_map("nvo",   "<S-z>", "<C-r>", "Redo"),
 
+    -- Section: Symbols
+    mk_map("nvo", "]d", function () vim.diagnostic.goto_next() end, "Next diagnostic"),
+    mk_map("nvo", "[d", function () vim.diagnostic.goto_prev() end, "Next diagnostic"),
+    mk_map("nvo", "]e", function () vim.diagnostic.goto_next({ severity = vim.diagnostic.severity.ERROR }) end, "Next error"),
+    mk_map("nvo", "[e", function () vim.diagnostic.goto_prev({ severity = vim.diagnostic.severity.ERROR }) end, "Next error"),
+
     -- Section: hjkl
     mk_map({ "n", "i" }, "<C-l>", "<esc><C-w><C-l>", "To right window"),
     mk_map({ "n", "i" }, "<C-h>", "<esc><C-w><C-h>", "To left window"),
@@ -145,7 +151,8 @@ M.keys = {
     mk_map("nv",  "0", "col('.') == 1 ? '^' : '0'", { desc = "Home", expr = true }),
     mk_map("nvo", "u", "<C-u>", "Scroll up"),
     mk_map("nvo", "m", "<C-d>", "Scroll down"),
-    mk_map("nvo", "q", hover_action, "Symbol info", 'lsp'),
+    mk_map("n", "q", hover_action, "Symbol info", 'lsp'),
+    mk_map("v", "q", function() vim.cmd.RustLsp { 'hover', 'range' } end, "Code action", "lsp-rust"),
 
     mk_map("nvo", "w", "b", "Previous word"),
     mk_map("nvo", "W", "B", "Previous WORD"),
@@ -178,12 +185,14 @@ M.keys = {
     -- Section: <leader>c
     mk_map("n", "<leader>ca", function() vim.lsp.buf.code_action() end, "Code action", "lsp"),
     mk_map("n", "<leader>cd", function() vim.diagnostic.open_float({ source = true, border = 'rounded' }) end, "Show diagnostics"),
-    mk_map("nvo", "<leader>cc", function () vim.lsp.buf.signature_help() end, "Symbol info", 'lsp'),
+    mk_map("n", "<leader>ce", function() vim.cmd.RustLsp('explainError') end, "Explain error", "lsp-rust"),
     mk_map("n", "<leader>cf", "<cmd>Telescope lsp_document_symbols<cr>", "Search document symbols", "lsp"),
     mk_map("n", "<leader>ch", "<cmd>TroubleToggle lsp_references<cr>", "List references", "trouble"),
+    mk_map("n", "<leader>ci", function() require("ext/rust-diag").invoke() end, "Explain error", "lsp-rust"),
     mk_map("n", "<leader>cj", "<cmd>TroubleToggle lsp_definitions<cr>", "List definitions", "trouble"),
     mk_map("n", "<leader>ck", "<cmd>TroubleToggle lsp_type_definitions<cr>", "List type definitionsni", "trouble"),
     mk_map("n", "<leader>co", ":Neotree document_symbols<cr>", "Source outline", "neo-tree"),
+    mk_map("n", "<leader>cq", function() vim.cmd.RustLsp('hover', 'actions') end, "Explain error", "lsp-rust"),
     mk_map("n", "<leader>cr", vim.lsp.buf.rename, "Rename", "lsp"),
     mk_map("n", "<leader>cs", "<cmd>Telescope lsp_dynamic_workspace_symbols<cr>", "Search symbols", "lsp"),
     mk_map("n", "<leader>cx", "<cmd>TroubleToggle document_diagnostics<cr>", "Document diagnostics", "trouble"),
@@ -192,6 +201,7 @@ M.keys = {
     -- Section: <leader>d
     mk_map("n", "<leader>da", function() require("dap").continue() end, "Continue", "dap"),
     mk_map("n", "<leader>de", function() require("dap").run_to_cursor() end, "Run to cursor", "dap"),
+    -- TODO: `dd` should start last debugging session (with recompilation) if no active session. 
     mk_map("n", "<leader>dd", function() require("dap").step_over() end, "Step over", "dap"),
     mk_map("n", "<leader>df", function() require("dap").step_into() end, "Step into", "dap"),
     mk_map("n", "<leader>dg", function() require("dap").step_out() end, "Step out", "dap"),

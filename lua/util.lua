@@ -1,3 +1,5 @@
+local debugging = false;
+
 local M = { }
 
 function M.key_canon_to_lazy(map)
@@ -10,6 +12,15 @@ function M.map(tbl, fn)
   return r
 end
 
-
+function M.dbg(msg)
+  if debugging then 
+    if type(msg) == "table" then
+      vim.print("dbg:")
+      vim.print(msg)
+    else
+      vim.print("dbg: " .. msg) 
+    end
+  end
+end
 
 return M

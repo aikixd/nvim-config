@@ -112,26 +112,25 @@ end
 M.keys = {
   common = {
     mk_map("n", "<esc>", ":noh<cr><esc>", "Escape and clear hlsearch"),
-    -- mk_map("n", "<C-Space>", function () require('cmp').mapping.complete() end, "Autocomplete", "cmp"),
+    mk_map("i", "<M-Space>", "<space><left>", "abc"),
     mk_map("n", "<C-\\>", function () require("which-key").show_command(nil, "n") end, "Which key"),
     mk_map("v", "<C-\\>", function () require("which-key").show_command(nil, "v") end, "Which key"),
     mk_map("i", "<C-\\>", function () require("which-key").show_command(nil, "i") end, "Which key"),
     mk_map("o", "<C-\\>", function () require("which-key").show_command(nil, "o") end, "Which key"),
-    mk_map("nvo", "<M-h>", function () move_buf("h") end , "Delete buffer"),
-    mk_map("nvo", "<M-l>", function () move_buf("l") end , "Delete buffer"),
+    mk_map("nvo", "<M-h>", function () move_buf("h") end , "Move buffer left"),
+    mk_map("nvo", "<M-l>", function () move_buf("l") end , "Move buffer right"),
     mk_map("v", "<", "<gv", "Indent more"),
     mk_map("v", ">", ">gv", "Indent less"),
     mk_map("nvo", "<M-,>", "<C-o>", "Back"),
     mk_map("nvo", "<M-.>", "<C-i>", "Forward"),
-    -- mk_map("n", "<C-'>", "m", "Set mark"),
-    mk_map("vi", "<C-s>", "<cmd>w<cr>", "Write"),
+    mk_map("vi", "<C-s>", "<cmd>w<cr>", "Write buffer"),
     mk_map("n", "<C-i>", "<cmd>IconPickerNormal<cr>", "Insert symbol", "icons"),
-    -- mk_map("i", "<Tab>", "<cmd>echo 'tab'<cr>", "Insert symbol", "icons"),
     mk_map("i", "<C-i>", "<cmd>IconPickerInsert<cr>", "Insert symbol", "icons"),
-    mk_map("nvio", "<C-q>", function () vim.lsp.buf.signature_help() end, "Signature help", 'lsp'),
+    mk_map("ni", "<C-q>", function () vim.lsp.buf.signature_help() end, "Signature help", 'lsp'),
     mk_map("nivo", "<C-s>", "<cmd>w<cr><esc>", "Write buffer"),
-    mk_map("nvio",   "<C-z>", "u", "Undo"),
-    mk_map("nvo",   "<S-z>", "<C-r>", "Redo"),
+    mk_map("nvio", "<C-w>", "<cmd>q<cr>", "Close window"),
+    mk_map("nvio", "<C-z>", "u", "Undo"),
+    mk_map("nvo",  "<S-z>", "<C-r>", "Redo"),
 
     -- Section: Symbols
     mk_map("nvo", "]d", function () vim.diagnostic.goto_next() end, "Next diagnostic"),
@@ -154,9 +153,6 @@ M.keys = {
     mk_map("n", "q", hover_action, "Symbol info", 'lsp'),
     mk_map("v", "q", function() vim.cmd.RustLsp { 'hover', 'range' } end, "Code action", "lsp-rust"),
 
-    mk_map("nvo", "w", "b", "Previous word"),
-    mk_map("nvo", "W", "B", "Previous WORD"),
-
     -- Move Lines
     mk_map("n", "<A-j>", "<cmd>m .+1<cr>==", { desc = "Move down" }),
     mk_map("n", "<A-k>", "<cmd>m .-2<cr>==", { desc = "Move up" }),
@@ -165,15 +161,16 @@ M.keys = {
     mk_map("v", "<A-j>", ":m '>+1<cr><cr>gv=gv", { desc = "Move down", silent = true }),
     mk_map("v", "<A-k>", ":m '<-2<cr><cr>gv=gv", { desc = "Move up", silent = true }),
 
-    -- mk_map({ "n", "v", "o" }, "q",  "<cmd>IconPickerNormal<cr>", "Symbol info", 'lsp'),
-
     -- Section: g
-    -- mk_map({ "n" }, "gd", function() vim.lsp.buf.definition() end, "Go to definition", "lsp"),
     mk_map("n", "gm", "m", "Set mark"),
     mk_map("n", "gh", "<cmd>Telescope lsp_references<cr>", "Go to references", "lsp"),
     mk_map("n", "gj", "<cmd>Telescope lsp_definitions<cr>", "Go to definitions", "lsp"),
     mk_map("n", "gk", "<cmd>Telescope lsp_implementations<cr>", "Go to implementations", "lsp"),
     mk_map("n", "gl", "<cmd>Telescope lsp_type_definitions<cr>", "Go to type definitions", "lsp"),
+
+    mk_map("n", "U", "a<cr><esc>", "Break line"),
+    mk_map("nvo", "w", "b", "Previous word"),
+    mk_map("nvo", "W", "B", "Previous WORD"),
 
     -- Section: <leader>b
     mk_map("nvo", "<leader>bb", "<cmd>b#<cr>", "Other buffer"),

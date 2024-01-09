@@ -6,7 +6,7 @@ return {
   {
     "williamboman/mason-lspconfig.nvim",
     opts = {
-      ensure_installed = { "lua_ls", "rust_analyzer" }
+      ensure_installed = { "lua_ls", "rust_analyzer", "codelldb" }
     }
   },
 
@@ -20,8 +20,6 @@ return {
       "hrsh7th/cmp-nvim-lsp"
     },
     config = function (lspc, _)
-      -- require("mason").setup()
-      -- require("mason-lspconfig").setup()
       vim.api.nvim_create_autocmd(
         'LspAttach',
         { 
@@ -82,6 +80,7 @@ return {
     enabled = false,
     event = 'VeryLazy',
     config = function(_, _)
+      require('util').debug("setting rust")
       local rt = require('rust-tools')
 
       local lldb = require('mason-registry').get_package('codelldb')
@@ -117,13 +116,33 @@ return {
     version = '^3', -- Recommended
     ft = { 'rust' },
     event = 'VeryLazy',
+    dependencies = {
+      "nvim-dap"
+    },
     config = function () 
+      require('util').dbg("setting rustaceanvim")
+
+      local lldb = require('mason-registry').get_package('codelldb')
+      local install_path = lldb:get_install_path()
+      local codelldb_path = install_path .. '/extension/adapter/codelldb'
+      local liblldb_path = install_path .. '/extension/lldb/lib/liblldb.so'
+      
+      vim.print({ codelldb_path, liblldb_path })
+
+      local adapter = require('rustaceanvim.config').get_codelldb_adapter(codelldb_path, liblldb_path)
+
+      require('util').dbg(adapter)
 
       vim.g.rustaceanvim = {
         tools = {
           hover_actions = {
-            replace_builtin_hover = false
+            replace_builtin_hover = false,
+            auto_focus = true
           }
+        },
+        dap = {
+          adapter = adapter,
+          
         }
       }
     end

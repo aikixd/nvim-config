@@ -23,6 +23,16 @@ return {
             ["q"] = "close",
           }
         }
+      },
+
+      pickers = {
+        buffers = {
+          mappings = {
+            n = {
+              ["d"] = "delete_buffer"
+            }
+          }
+        }
       }
     }
   },

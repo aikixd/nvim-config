@@ -13,9 +13,13 @@ return {
       'nvim-dap-ui'
     },
     config = function ()
+      util.dbg("setting dap")
       local dap = require('dap')
 
+      -- This is used by simrat plugin
       dap.defaults.rt_lldb.exception_breakpoints = {'rust_panic'}
+      -- This is used by mrcjkb plugin
+      dap.defaults.lldb.exception_breakpoints = {'rust_panic'}
       dap.repl.commands.help = { '.help', '.h' }
 
       -- dap.set_exception_breakpoints({'rust_panic'})

@@ -3,8 +3,6 @@ local diag_win = nil
 local M = { }
 
 M.invoke = function ()
-  vim.print("diag_win:")
-  vim.print(diag_win)
   if diag_win ~= nil then
     vim.api.nvim_set_current_win(diag_win)
     return
@@ -28,20 +26,15 @@ M.invoke = function ()
       if i == nil then return end
 
       local text = {}
-      local width = 1
       local lines = 0
 
       for line in diags[i].user_data.lsp.data.rendered:gmatch("([^\n]*)\n?") do
         table.insert(text, line)
-        if width < string.len(line) then width = string.len(line) + 4 end
         lines = lines + 1
       end
 
-      local screen_w = vim.o.columns
-      local max_w = screen_w - 20
       local max_h = vim.api.nvim_win_get_height(0) / 2 - 4 -- A bit smaller than half
 
-      if width > max_w then width = max_w end
       if lines > max_h then lines = max_h end
 
       local buf = vim.api.nvim_create_buf(false, true)

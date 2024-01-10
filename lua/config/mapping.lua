@@ -109,6 +109,8 @@ local hover_action = function ()
   end
 end
 
+
+
 M.keys = {
   common = {
     mk_map("n", "<esc>", ":noh<cr><esc>", "Escape and clear hlsearch"),
@@ -128,7 +130,7 @@ M.keys = {
     mk_map("i", "<C-i>", "<cmd>IconPickerInsert<cr>", "Insert symbol", "icons"),
     mk_map("ni", "<C-q>", function () vim.lsp.buf.signature_help() end, "Signature help", 'lsp'),
     mk_map("nivo", "<C-s>", "<cmd>w<cr><esc>", "Write buffer"),
-    mk_map("nvio", "<C-w>", "<cmd>q<cr>", "Close window"),
+    -- mk_map("nvio", "<C-w>", "<cmd>q<cr>", "Close window"),
     mk_map("nvio", "<C-z>", "u", "Undo"),
     mk_map("nvo",  "<S-z>", "<C-r>", "Redo"),
 
@@ -168,6 +170,8 @@ M.keys = {
     mk_map("n", "gk", "<cmd>Telescope lsp_implementations<cr>", "Go to implementations", "lsp"),
     mk_map("n", "gl", "<cmd>Telescope lsp_type_definitions<cr>", "Go to type definitions", "lsp"),
 
+    mk_map("nxo", "s", function() require("flash").jump() end, "Flash", "flash"),
+    mk_map("nxo", "S", function() require("flash").treesitter() end, "Flash treesitter", "flash"),
     mk_map("n", "U", "a<cr><esc>", "Break line"),
     mk_map("nvo", "w", "b", "Previous word"),
     mk_map("nvo", "W", "B", "Previous WORD"),
@@ -185,9 +189,10 @@ M.keys = {
     mk_map("n", "<leader>ce", function() vim.cmd.RustLsp('explainError') end, "Explain error", "lsp-rust"),
     mk_map("n", "<leader>cf", "<cmd>Telescope lsp_document_symbols<cr>", "Search document symbols", "lsp"),
     mk_map("n", "<leader>ch", "<cmd>TroubleToggle lsp_references<cr>", "List references", "trouble"),
-    mk_map("n", "<leader>ci", function() require("ext/rust-diag").invoke() end, "Explain error", "lsp-rust"),
+    mk_map("n", "<leader>ci", function() require("ext/rust-diag").invoke() end, "Rendered error", "lsp-rust"),
     mk_map("n", "<leader>cj", "<cmd>TroubleToggle lsp_definitions<cr>", "List definitions", "trouble"),
     mk_map("n", "<leader>ck", "<cmd>TroubleToggle lsp_type_definitions<cr>", "List type definitionsni", "trouble"),
+    mk_map("n", "<leader>cn", function () require('dropbar.api').pick() end, "Bread-crumbs"),
     mk_map("n", "<leader>co", ":Neotree document_symbols<cr>", "Source outline", "neo-tree"),
     mk_map("n", "<leader>cq", function() vim.cmd.RustLsp('hover', 'actions') end, "Explain error", "lsp-rust"),
     mk_map("n", "<leader>cr", vim.lsp.buf.rename, "Rename", "lsp"),

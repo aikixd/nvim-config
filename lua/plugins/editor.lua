@@ -220,5 +220,22 @@ return {
   {
     'lewis6991/gitsigns.nvim',
     opts = {}
+  },
+  {
+    'Bekaboo/dropbar.nvim',
+    -- optional, but required for fuzzy finder support
+    -- dependencies = {
+    --   'nvim-telescope/telescope-fzf-native.nvim'
+    -- }
+  },
+  {
+    "folke/flash.nvim",
+    event = "VeryLazy",
+    opts = {},
+    keys =
+      util.map(
+        config.mapping.get_filtered('flash'),
+        util.key_canon_to_lazy
+      ),
   }
 }

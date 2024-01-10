@@ -19,6 +19,17 @@ vim.opt.rtp:prepend(lazypath)
 local cfg = require("config")
 cfg.setup()
 
+local util = require("util")
+
+if util.debugging then
+
+  vim.api.nvim_create_autocmd('ColorScheme', {
+    group = vim.api.nvim_create_augroup('Debug-ColorScheme', {}),
+    callback = function () print "ColorScheme called" end,
+  })
+
+end
+
 
 require("lazy").setup({
   spec = {

@@ -138,12 +138,30 @@ return {
           hover_actions = {
             replace_builtin_hover = false,
             auto_focus = true
+          },
+          float_win_config = {
+            auto_focus = true
           }
         },
         dap = {
           adapter = adapter,
           
-        }
+        }, 
+        server = {
+          settings = {
+            ['rust-analyzer'] = {
+              checkOnSave = true,
+              check = {
+                enable = true,
+                -- command = 'clippy',
+                features = 'all',
+              },
+              procMacro = {
+                enable = true,
+              },
+            },
+          },
+        },
       }
     end
   }

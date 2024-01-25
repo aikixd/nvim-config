@@ -39,11 +39,23 @@ function M.setup(opts)
   vim.keymap.set({"n","v","i","o"}, "<C-i>", "<C-i>")
   -- vim.keymap.set({"n","v","i","o"}, "<Tab>", "<Tab>")
   vim.keymap.set({"n"}, "<Tab>", "<Tab>")
+  require('config.map_fixes').config_netrw_explorer()
+
+  -- Icons
+  vim.fn.sign_define("DiagnosticSignError",
+    {text = " ", texthl = "DiagnosticSignError"})
+  vim.fn.sign_define("DiagnosticSignWarn",
+    {text = " ", texthl = "DiagnosticSignWarn"})
+  vim.fn.sign_define("DiagnosticSignInfo",
+    {text = " ", texthl = "DiagnosticSignInfo"})
+  vim.fn.sign_define("DiagnosticSignHint",
+    {text = "󰌵", texthl = "DiagnosticSignHint"})
+
 
   vim.cmd("helptags ALL")
 
-  require('config.map_fixes').config_netrw_explorer()
-
+  -- Fix for status line disappearing on mode change with cmdheight == 0.
+  -- https://www.reddit.com/r/neovim/comments/16hiz32/help_for_disappearing_statusline/
   vim.api.nvim_create_autocmd(
     "ModeChanged",
     {
@@ -68,9 +80,11 @@ function M.setup(opts)
       print_map(vim.api.nvim_buf_get_keymap(0, "n"))
       print_map(vim.api.nvim_buf_get_keymap(0, "v"))
       print_map(vim.api.nvim_buf_get_keymap(0, "i"))
+      print_map(vim.api.nvim_buf_get_keymap(0, "o"))
       print_map(vim.api.nvim_get_keymap("n"))
       print_map(vim.api.nvim_get_keymap("v"))
       print_map(vim.api.nvim_get_keymap("i"))
+      print_map(vim.api.nvim_get_keymap("o"))
     end,
     {
       nargs = 1,

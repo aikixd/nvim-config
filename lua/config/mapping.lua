@@ -95,6 +95,30 @@ local move_buf = function (dir)
 
 end
 
+local switch_buf_last = function ()
+  if vim.fn.getbufinfo(vim.fn.bufnr('#'))[1].listed == 1 then
+    vim.cmd("b#")
+    return
+  end
+
+  local bufs =
+    vim
+      .iter(vim.api.nvim_list_bufs())
+      :map(function (b) return { b, vim.fn.getbufinfo(b)[1] } end)
+      :filter(function (x) return x[2].listed == 1 end)
+      :filter(function (x) return x[2].hidden == 1 end)
+      :filter(function (x) return x[1] ~= vim.api.nvim_get_current_buf() end)
+      :totable()
+
+  table.sort(bufs, function(a, b)
+    return a[2].lastused > b[2].lastused
+  end)
+
+  if #bufs == 0 then return end
+
+  vim.api.nvim_set_current_buf(bufs[1][1])
+end
+
 local hover_action = function ()
   local dap = require('dap')
   if next(dap.sessions()) ~= nil then
@@ -170,14 +194,18 @@ M.keys = {
     mk_map("n", "gk", "<cmd>Telescope lsp_implementations<cr>", "Go to implementations", "lsp"),
     mk_map("n", "gl", "<cmd>Telescope lsp_type_definitions<cr>", "Go to type definitions", "lsp"),
 
+    mk_map("nv", "<C-p>", "\"0p", "Paste after"),
+    mk_map("nv", "<C-S-p>", "\"0P", "Paste before"),
     mk_map("nxo", "s", function() require("flash").jump() end, "Flash", "flash"),
     mk_map("nxo", "S", function() require("flash").treesitter() end, "Flash treesitter", "flash"),
-    mk_map("n", "U", "a<cr><esc>", "Break line"),
+    mk_map("n", "U", "a<cr><esc>^", "Break line"),
+    mk_map("n", "<C-S-u>", "<left>a<cr><esc>", "Break line before"),
     mk_map("nvo", "w", "b", "Previous word"),
     mk_map("nvo", "W", "B", "Previous WORD"),
 
     -- Section: <leader>b
-    mk_map("nvo", "<leader>bb", "<cmd>b#<cr>", "Other buffer"),
+    -- mk_map("nvo", "<leader>bb", "<cmd>b#<cr>", "Other buffer"),
+    mk_map("nvo", "<leader>bb", switch_buf_last, "Other buffer"),
     mk_map("nvo", "<leader>bd", "<cmd>bn | bd #<cr>", "Delete buffer"),
     mk_map("nvo", "<leader>bf", "<cmd>Telescope buffers sort_mru=true<cr>", "Find buffer", "telescope"),
     mk_map("nvo", "<leader>bh", function () copy_buf("h") end , "Delete buffer"),
@@ -185,11 +213,14 @@ M.keys = {
 
     -- Section: <leader>c
     mk_map("n", "<leader>ca", function() vim.lsp.buf.code_action() end, "Code action", "lsp"),
+    mk_map("n", "<leader>ca", "<cmd>RustLsp codeAction<cr>", "Code action", "lsp-rust"),
     mk_map("n", "<leader>cd", function() vim.diagnostic.open_float({ source = true, border = 'rounded' }) end, "Show diagnostics"),
+    mk_map("n", "<leader>cD", function() vim.diagnostic.open_float({ source = true, severity = { min = vim.diagnostic.severity.HINT }, border = 'rounded' }) end, "Show diagnostics"),
     mk_map("n", "<leader>ce", function() vim.cmd.RustLsp('explainError') end, "Explain error", "lsp-rust"),
     mk_map("n", "<leader>cf", "<cmd>Telescope lsp_document_symbols<cr>", "Search document symbols", "lsp"),
     mk_map("n", "<leader>ch", "<cmd>TroubleToggle lsp_references<cr>", "List references", "trouble"),
-    mk_map("n", "<leader>ci", function() require("ext/rust-diag").invoke() end, "Rendered error", "lsp-rust"),
+    -- mk_map("n", "<leader>ci", function() require("ext/rust-diag").invoke() end, "Rendered error", "lsp-rust"),
+    mk_map("n", "<leader>ci", function() vim.cmd.RustLsp('renderDiagnostic') end, "Rendered error", "lsp-rust"),
     mk_map("n", "<leader>cj", "<cmd>TroubleToggle lsp_definitions<cr>", "List definitions", "trouble"),
     mk_map("n", "<leader>ck", "<cmd>TroubleToggle lsp_type_definitions<cr>", "List type definitionsni", "trouble"),
     mk_map("n", "<leader>cn", function () require('dropbar.api').pick() end, "Bread-crumbs"),
@@ -222,11 +253,15 @@ M.keys = {
     mk_map({ "n", "v" }, "<leader>fr", ":Neotree reveal<cr>", "Reveal current", "neo-tree"),
     mk_map({ "n", "v" }, "<leader>fw", ":Telescope jumplist<cr>", "Jump list", "telescope"),
 
+    -- Section: <leader>g
+    mk_map("nv", "<leader>gd", "<cmd>DiffviewOpen<cr>", "Open diffview", "diffview"),
+    mk_map("nv", "<leader>gc", "<cmd>DiffviewOpen -- %<cr>", "Open diffview for current", "diffview"),
+
     -- Section: <leader>m
     mk_map({ "n", "v" }, "<leader>mh", ":Telescope help_tags<cr>", "Search help tags", "telescope"),
     mk_map({ "n", "v" }, "<leader>ml", "<cmd>Lazy<cr>", "Plugin mgmt"),
-    mk_map("v", "<leader>mr", run_lua_from_visual, "Plugin mgmt"),
-    mk_map("nvo", "<leader>mq", "<cmd>qa<cr>", "Exit"),
+    mk_map("v", "<leader>mr", run_lua_from_visual, "Run selected lua"),
+    mk_map("nv", "<leader>mq", "<cmd>qa<cr>", "Exit"),
 
     -- Section: <leader>s
     mk_map({ "n", "v" }, "<leader>sf", ":Telescope current_buffer_fuzzy_find<cr>", "Search here", "telescope"),

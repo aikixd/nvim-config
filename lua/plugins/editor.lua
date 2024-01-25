@@ -69,6 +69,14 @@ return {
         util.key_canon_to_lazy
       ),
     opts = {
+      default_component_configs = {
+        indent = {
+          with_expanders = true,
+          expander_collapsed = "",
+          expander_expanded = "",
+          expander_highlight = "NeoTreeExpander",
+        },
+      },
       window = {
         mappings = {
           ["<space>"] = {
@@ -220,6 +228,27 @@ return {
   {
     'lewis6991/gitsigns.nvim',
     opts = {}
+  },
+  {
+    "sindrets/diffview.nvim",
+    opts = {
+      view = {
+        default = {
+          winbar_info = true
+        },
+        merge_tool = {
+          layout = "diff4_mixed"
+        }
+      },
+      keymaps = {
+        disable_defaults = true
+      }
+    },
+    keys =
+      util.map(
+        config.mapping.get_filtered('diffview'),
+        util.key_canon_to_lazy
+      ),
   },
   {
     'Bekaboo/dropbar.nvim',

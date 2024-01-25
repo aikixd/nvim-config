@@ -28,6 +28,22 @@ if util.debugging then
     callback = function () print "ColorScheme called" end,
   })
 
+  vim.api.nvim_create_autocmd('CursorMoved', {
+    group = vim.api.nvim_create_augroup('Debug-CursorMoved', {}),
+    callback = function () print "CursorMoved called" end,
+  })
+
+
+  vim.api.nvim_create_autocmd('BufHidden', {
+    group = vim.api.nvim_create_augroup('Debug-BufHidden', {}),
+    callback = function () print "BufHidden called" end,
+  })
+
+
+  vim.api.nvim_create_autocmd('InsertCharPre', {
+    group = vim.api.nvim_create_augroup('Debug-InsertCharPre', {}),
+    callback = function () print "InsertCharPre called" end,
+  })
 end
 
 

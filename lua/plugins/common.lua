@@ -44,7 +44,7 @@ return {
     },
     config = function (_, _)
       -- Adapted from catppuccin feline integration
-      local C = require("catppuccin.palettes").get_palette("macchiato")
+      local clr = require("catppuccin.palettes").get_palette("macchiato") or {}
       local assets = {
         left_separator = "",
         right_separator = "",
@@ -66,59 +66,48 @@ return {
         },
       }
       local sett = {
-        text = C.mantle,
-        bkg = C.mantle,
-        diffs = C.mauve,
-        extras = C.overlay1,
-        curr_file = C.maroon,
-        curr_dir = C.flamingo,
+        text = clr.mantle,
+        bkg = clr.mantle,
+        diffs = clr.mauve,
+        extras = clr.overlay1,
+        curr_file = clr.maroon,
+        curr_dir = clr.flamingo,
         show_modified = false,
       }
       local mode_colors = {
-        ["n"] = { "NORMAL", C.lavender },
-        ["no"] = { "N-PENDING", C.lavender },
-        ["i"] = { "INSERT", C.green },
-        ["ic"] = { "INSERT", C.green },
-        ["t"] = { "TERMINAL", C.green },
-        ["v"] = { "VISUAL", C.flamingo },
-        ["V"] = { "V-LINE", C.flamingo },
-        ["␖"] = { "V-BLOCK", C.flamingo },
-        ["R"] = { "REPLACE", C.maroon },
-        ["Rv"] = { "V-REPLACE", C.maroon },
-        ["s"] = { "SELECT", C.maroon },
-        ["S"] = { "S-LINE", C.maroon },
-        ["␓"] = { "S-BLOCK", C.maroon },
-        ["c"] = { "COMMAND", C.peach },
-        ["cv"] = { "COMMAND", C.peach },
-        ["ce"] = { "COMMAND", C.peach },
-        ["r"] = { "PROMPT", C.teal },
-        ["rm"] = { "MORE", C.teal },
-        ["r?"] = { "CONFIRM", C.mauve },
-        ["!"] = { "SHELL", C.green },
+        ["n"] = { "NORMAL", clr.lavender },
+        ["no"] = { "N-PENDING", clr.lavender },
+        ["i"] = { "INSERT", clr.green },
+        ["ic"] = { "INSERT", clr.green },
+        ["t"] = { "TERMINAL", clr.green },
+        ["v"] = { "VISUAL", clr.flamingo },
+        ["V"] = { "V-LINE", clr.flamingo },
+        ["␖"] = { "V-BLOCK", clr.flamingo },
+        ["R"] = { "REPLACE", clr.maroon },
+        ["Rv"] = { "V-REPLACE", clr.maroon },
+        ["s"] = { "SELECT", clr.maroon },
+        ["S"] = { "S-LINE", clr.maroon },
+        ["␓"] = { "S-BLOCK", clr.maroon },
+        ["c"] = { "COMMAND", clr.peach },
+        ["cv"] = { "COMMAND", clr.peach },
+        ["ce"] = { "COMMAND", clr.peach },
+        ["r"] = { "PROMPT", clr.teal },
+        ["rm"] = { "MORE", clr.teal },
+        ["r?"] = { "CONFIRM", clr.mauve },
+        ["!"] = { "SHELL", clr.green },
       }
       local theme = {
-        fg = C.text,
-        bg = C.mantle,
-        green = C.green,
-        yellow = C.yellow,
-        purple = C.mauve,
-        orange = C.peach,
+        fg = clr.text,
+        bg = clr.mantle,
+        green = clr.green,
+        yellow = clr.yellow,
+        purple = clr.mauve,
+        orange = clr.peach,
         peanut = "#f6d5a4",
-        red = C.red,
-        aqua = C.sapphire,
-        darkblue = C.crust,
-        dark_red = C.flamingo,
-      }
-
-      local vi_mode_colors = {
-        NORMAL = "green",
-        OP = "green",
-        INSERT = "yellow",
-        VISUAL = "purple",
-        LINES = "orange",
-        BLOCK = "dark_red",
-        REPLACE = "red",
-        COMMAND = "aqua",
+        red = clr.red,
+        aqua = clr.sapphire,
+        darkblue = clr.crust,
+        dark_red = clr.flamingo,
       }
 
       local c = {
@@ -127,7 +116,6 @@ return {
             name = "vi_mode",
             opts = {
               show_mode_name = true,
-              -- padding = "center", -- Uncomment for extra padding.
             },
           },
           hl = function()
@@ -146,16 +134,26 @@ return {
               fg = sett.text,
               bg = mode_color[2],
               style = "bold",
-              --name = "NeovimModeHLColor",
             }
           end,
           left_sep = "block",
           right_sep = "block",
         },
+        gitIcon = { 
+          provider = "  ", 
+          hl = {
+            fg = clr.overlay1,
+            bg = clr.surface0
+          },
+        },
+        gitIconSep = {
+          provider = "",
+          hl = { fg = clr.surface0 }
+        },
         gitBranch = {
           provider = "git_branch",
           hl = {
-            fg = C.text,
+            fg = clr.text,
             bg = "darkblue",
             style = "bold",
           },
@@ -305,7 +303,9 @@ return {
 
       local left = {
         c.vim_mode,
-        c.gitBranch,
+        c.gitIcon,
+        c.gitIconSep,
+        -- c.gitBranch,
         c.gitDiffAdded,
         c.gitDiffRemoved,
         c.gitDiffChanged,
@@ -375,7 +375,6 @@ return {
         components = components,
         conditional_components = c_components,
         theme = theme,
-        vi_mode_colors = vi_mode_colors,
       })
     end
   },

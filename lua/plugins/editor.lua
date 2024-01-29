@@ -227,7 +227,18 @@ return {
   },
   {
     'lewis6991/gitsigns.nvim',
-    opts = {}
+    opts = {
+      current_line_blame_opts = {
+        delay = 200,
+        virt_text_pos = "right_align"
+      }
+    },
+    event = "BufAdd",
+    keys =
+      util.map(
+        config.mapping.get_filtered('gitsigns'),
+        util.key_canon_to_lazy
+      ),
   },
   {
     "sindrets/diffview.nvim",

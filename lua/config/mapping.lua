@@ -153,22 +153,24 @@ M.keys = {
     mk_map("n", "<C-i>", "<cmd>IconPickerNormal<cr>", "Insert symbol", "icons"),
     mk_map("i", "<C-i>", "<cmd>IconPickerInsert<cr>", "Insert symbol", "icons"),
     mk_map("ni", "<C-q>", function () vim.lsp.buf.signature_help() end, "Signature help", 'lsp'),
-    mk_map("nivo", "<C-s>", "<cmd>w<cr><esc>", "Write buffer"),
+    mk_map("niv", "<C-s>", "<cmd>w<cr><esc>", "Write buffer"),
     -- mk_map("nvio", "<C-w>", "<cmd>q<cr>", "Close window"),
-    mk_map("nvio", "<C-z>", "u", "Undo"),
-    mk_map("nvo",  "<S-z>", "<C-r>", "Redo"),
+    mk_map("nvi", "<C-z>", "u", "Undo"),
+    mk_map("nv",  "<S-z>", "<C-r>", "Redo"),
 
     -- Section: Symbols
-    mk_map("nvo", "]d", function () vim.diagnostic.goto_next() end, "Next diagnostic"),
-    mk_map("nvo", "[d", function () vim.diagnostic.goto_prev() end, "Next diagnostic"),
-    mk_map("nvo", "]e", function () vim.diagnostic.goto_next({ severity = vim.diagnostic.severity.ERROR }) end, "Next error"),
-    mk_map("nvo", "[e", function () vim.diagnostic.goto_prev({ severity = vim.diagnostic.severity.ERROR }) end, "Next error"),
+    mk_map("nv", "]d", function () vim.diagnostic.goto_next() end, "Next diagnostic"),
+    mk_map("nv", "[d", function () vim.diagnostic.goto_prev() end, "Next diagnostic"),
+    mk_map("nv", "]e", function () vim.diagnostic.goto_next({ severity = vim.diagnostic.severity.ERROR }) end, "Next error"),
+    mk_map("nv", "[e", function () vim.diagnostic.goto_prev({ severity = vim.diagnostic.severity.ERROR }) end, "Next error"),
+    mk_map("nv", "[g", function () require('gitsigns').prev_hunk() end, "Previous git hunk", "gitsigns"),
+    mk_map("nv", "]g", function () require('gitsigns').next_hunk() end, "Next git hunk", "gitsigns"),
 
     -- Section: hjkl
-    mk_map({ "n", "i" }, "<C-l>", "<esc><C-w><C-l>", "To right window"),
-    mk_map({ "n", "i" }, "<C-h>", "<esc><C-w><C-h>", "To left window"),
-    mk_map({ "n", "i" }, "<C-j>", "<esc><C-w><C-j>", "To lower window"),
-    mk_map({ "n", "i" }, "<C-k>", "<esc><C-w><C-k>", "To upper window"),
+    mk_map("ni", "<C-l>", "<esc><C-w><C-l>", "To right window"),
+    mk_map("ni", "<C-h>", "<esc><C-w><C-h>", "To left window"),
+    mk_map("ni", "<C-j>", "<esc><C-w><C-j>", "To lower window"),
+    mk_map("ni", "<C-k>", "<esc><C-w><C-k>", "To upper window"),
     mk_map("nvoi", "<A-u>", "<C-y>", "Scroll up"),
     mk_map("nvoi", "<A-m>", "<C-e>", "Scroll down"),
 
@@ -188,6 +190,7 @@ M.keys = {
     mk_map("v", "<A-k>", ":m '<-2<cr><cr>gv=gv", { desc = "Move up", silent = true }),
 
     -- Section: g
+    mk_map("n", "gd", function () require('gitsigns').toggle_deleted() end, "Show deleted lines", "gitsigns"),
     mk_map("n", "gm", "m", "Set mark"),
     mk_map("n", "gh", "<cmd>Telescope lsp_references<cr>", "Go to references", "lsp"),
     mk_map("n", "gj", "<cmd>Telescope lsp_definitions<cr>", "Go to definitions", "lsp"),
@@ -254,8 +257,11 @@ M.keys = {
     mk_map({ "n", "v" }, "<leader>fw", ":Telescope jumplist<cr>", "Jump list", "telescope"),
 
     -- Section: <leader>g
-    mk_map("nv", "<leader>gd", "<cmd>DiffviewOpen<cr>", "Open diffview", "diffview"),
-    mk_map("nv", "<leader>gc", "<cmd>DiffviewOpen -- %<cr>", "Open diffview for current", "diffview"),
+    mk_map("nv", "<leader>gb", "<cmd>Gitsigns toggle_current_line_blame<cr>", "Toggle line blame", "gitsigns"),
+    mk_map("nv", "<leader>gc", function() require("gitsigns").setloclist() end, "See local hunks", "gitsigns"),
+    mk_map("nv", "<leader>gC", function() require("gitsigns").setqflist("all") end, "See all hunks", "gitsigns"),
+    mk_map("nv", "<leader>gd", "<cmd>DiffviewOpen -- %<cr>", "Diff current buffer", "diffview"),
+    mk_map("nv", "<leader>gD", "<cmd>DiffviewOpen<cr>", "Diff all", "diffview"),
 
     -- Section: <leader>m
     mk_map({ "n", "v" }, "<leader>mh", ":Telescope help_tags<cr>", "Search help tags", "telescope"),

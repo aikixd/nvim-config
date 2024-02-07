@@ -196,6 +196,7 @@ M.keys = {
     mk_map("n", "gj", "<cmd>Telescope lsp_definitions<cr>", "Go to definitions", "lsp"),
     mk_map("n", "gk", "<cmd>Telescope lsp_implementations<cr>", "Go to implementations", "lsp"),
     mk_map("n", "gl", "<cmd>Telescope lsp_type_definitions<cr>", "Go to type definitions", "lsp"),
+    mk_map("n", "gr", "q", "Macro records"),
 
     mk_map("nv", "<C-p>", "\"0p", "Paste after"),
     mk_map("nv", "<C-S-p>", "\"0P", "Paste before"),
@@ -222,7 +223,6 @@ M.keys = {
     mk_map("n", "<leader>ce", function() vim.cmd.RustLsp('explainError') end, "Explain error", "lsp-rust"),
     mk_map("n", "<leader>cf", "<cmd>Telescope lsp_document_symbols<cr>", "Search document symbols", "lsp"),
     mk_map("n", "<leader>ch", "<cmd>TroubleToggle lsp_references<cr>", "List references", "trouble"),
-    -- mk_map("n", "<leader>ci", function() require("ext/rust-diag").invoke() end, "Rendered error", "lsp-rust"),
     mk_map("n", "<leader>ci", function() vim.cmd.RustLsp('renderDiagnostic') end, "Rendered error", "lsp-rust"),
     mk_map("n", "<leader>cj", "<cmd>TroubleToggle lsp_definitions<cr>", "List definitions", "trouble"),
     mk_map("n", "<leader>ck", "<cmd>TroubleToggle lsp_type_definitions<cr>", "List type definitionsni", "trouble"),
@@ -231,6 +231,7 @@ M.keys = {
     mk_map("n", "<leader>cq", function() vim.cmd.RustLsp('hover', 'actions') end, "Explain error", "lsp-rust"),
     mk_map("n", "<leader>cr", vim.lsp.buf.rename, "Rename", "lsp"),
     mk_map("n", "<leader>cs", "<cmd>Telescope lsp_dynamic_workspace_symbols<cr>", "Search symbols", "lsp"),
+    mk_map("n", "<leader>cu", function() vim.lsp.inlay_hint.enable(0, not vim.lsp.inlay_hint.is_enabled()) end, "Toogle inlay", "lsp-rust"),
     mk_map("n", "<leader>cx", "<cmd>TroubleToggle document_diagnostics<cr>", "Document diagnostics", "trouble"),
     mk_map("n", "<leader>cX", "<cmd>TroubleToggle workspace_diagnostics<cr>", "Workspace diagnostics", "trouble"),
 

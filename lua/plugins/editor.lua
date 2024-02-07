@@ -41,9 +41,11 @@ return {
     version = false,
     event = "VeryLazy",
     config = function(_, _)
-      require('mini.indentscope').setup({
-        symbol = '│'
-      })
+      -- require('mini.indentscope').setup({
+      --   symbol = '│'
+      -- })
+
+      require('mini.ai').setup()
 
       require('mini.comment').setup({
       })
@@ -231,7 +233,8 @@ return {
       current_line_blame_opts = {
         delay = 200,
         virt_text_pos = "right_align"
-      }
+      },
+      attach_to_untracked = true,
     },
     event = "BufAdd",
     keys =
@@ -252,7 +255,7 @@ return {
         }
       },
       keymaps = {
-        disable_defaults = true
+        disable_defaults = false
       }
     },
     keys =

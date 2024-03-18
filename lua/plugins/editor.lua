@@ -37,6 +37,13 @@ return {
     }
   },
   {
+    "j-hui/fidget.nvim",
+    opts = {
+      progress = {
+      }
+    },
+  },
+  {
     'echasnovski/mini.nvim',
     version = false,
     event = "VeryLazy",

@@ -27,6 +27,9 @@ return {
   },
   {
     'rcarriga/nvim-dap-ui',
+    dependencies = {
+      "nvim-neotest/nvim-nio"
+    },
     keys = util.map(
       config.mapping.get_filtered('dap-ui'),
       util.key_canon_to_lazy

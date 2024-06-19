@@ -65,7 +65,7 @@ return {
   },
   {
     "nvim-neo-tree/neo-tree.nvim",
-    branch = "v3.x",
+    -- branch = "v3.x",
     dependencies = {
       "nvim-lua/plenary.nvim",
       "nvim-tree/nvim-web-devicons", -- not strictly required, but recommended
@@ -237,6 +237,7 @@ return {
   {
     'lewis6991/gitsigns.nvim',
     opts = {
+      _signs_staged_enable = false,
       current_line_blame_opts = {
         delay = 200,
         virt_text_pos = "right_align"

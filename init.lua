@@ -53,6 +53,9 @@ require("lazy").setup({
     -- { import = "plugins/editor" },
     { import = "plugins/lsp" },
     -- { import = "plugins/code" }
+  },
+  checker = {
+    check_pinned = true
   }
 })
 

@@ -1,3 +1,4 @@
+local qol = require('ext/qol')
 local M = {}
 
 local function mk_map(mode, lhs, rhs, opts, ctx)
@@ -226,12 +227,14 @@ M.keys = {
     mk_map("n", "<leader>ci", function() vim.cmd.RustLsp('renderDiagnostic') end, "Rendered error", "lsp-rust"),
     mk_map("n", "<leader>cj", "<cmd>TroubleToggle lsp_definitions<cr>", "List definitions", "trouble"),
     mk_map("n", "<leader>ck", "<cmd>TroubleToggle lsp_type_definitions<cr>", "List type definitionsni", "trouble"),
+    mk_map("nv", "<leader>cmrl", require('ext/lang').rust.toggle_lifetimes, "Toggle lifetimes display"),
+    mk_map("nv", "<leader>cmrc", require('ext/lang').rust.toggle_captures, "Toggle closure captures display"),
     mk_map("n", "<leader>cn", function () require('dropbar.api').pick() end, "Bread-crumbs"),
     mk_map("n", "<leader>co", ":Neotree document_symbols<cr>", "Source outline", "neo-tree"),
     mk_map("n", "<leader>cq", function() vim.cmd.RustLsp('hover', 'actions') end, "Explain error", "lsp-rust"),
     mk_map("n", "<leader>cr", vim.lsp.buf.rename, "Rename", "lsp"),
     mk_map("n", "<leader>cs", "<cmd>Telescope lsp_dynamic_workspace_symbols<cr>", "Search symbols", "lsp"),
-    mk_map("n", "<leader>cu", function() vim.lsp.inlay_hint.enable(0, not vim.lsp.inlay_hint.is_enabled()) end, "Toogle inlay", "lsp-rust"),
+    mk_map("n", "<leader>cu", function() vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled()) end, "Toogle inlay", "lsp-rust"),
     mk_map("n", "<leader>cx", "<cmd>TroubleToggle document_diagnostics<cr>", "Document diagnostics", "trouble"),
     mk_map("n", "<leader>cX", "<cmd>TroubleToggle workspace_diagnostics<cr>", "Workspace diagnostics", "trouble"),
 
@@ -258,17 +261,23 @@ M.keys = {
     mk_map({ "n", "v" }, "<leader>fw", ":Telescope jumplist<cr>", "Jump list", "telescope"),
 
     -- Section: <leader>g
+    mk_map("n", "<leader>ga", function() require("ext/git").gitsigns_actions() end, "Toggle line blame", "gitsigns"),
     mk_map("nv", "<leader>gb", "<cmd>Gitsigns toggle_current_line_blame<cr>", "Toggle line blame", "gitsigns"),
+    -- mk_map("nv", "<leader>gB", function() require("gitsigns").blame_line() end, "See line blame", "gitsigns"),
+    mk_map("nv", "<leader>gg", function() require("ext/git").toggle_extended_info() end, "Toggle details"),
     mk_map("nv", "<leader>gc", function() require("gitsigns").setloclist() end, "See local hunks", "gitsigns"),
     mk_map("nv", "<leader>gC", function() require("gitsigns").setqflist("all") end, "See all hunks", "gitsigns"),
     mk_map("nv", "<leader>gd", "<cmd>DiffviewOpen -- %<cr>", "Diff current buffer", "diffview"),
     mk_map("nv", "<leader>gD", "<cmd>DiffviewOpen<cr>", "Diff all", "diffview"),
+    mk_map("n", "<leader>gs", function() require("gitsigns").stage_hunk() end, "Stage hunk", "gitsigns"),
+    mk_map("v", "<leader>gs", function() require("gitsigns").stage_hunk(qol.get_selection_line_range()) end, "Stage hunk", "gitsigns"),
 
     -- Section: <leader>m
     mk_map({ "n", "v" }, "<leader>mh", ":Telescope help_tags<cr>", "Search help tags", "telescope"),
     mk_map({ "n", "v" }, "<leader>ml", "<cmd>Lazy<cr>", "Plugin mgmt"),
     mk_map("v", "<leader>mr", run_lua_from_visual, "Run selected lua"),
     mk_map("nv", "<leader>mq", "<cmd>qa<cr>", "Exit"),
+    mk_map("nv", "<leader>mp", require("ext/qol").yank_location, "Yank current location into '+'"),
 
     -- Section: <leader>s
     mk_map({ "n", "v" }, "<leader>sf", ":Telescope current_buffer_fuzzy_find<cr>", "Search here", "telescope"),

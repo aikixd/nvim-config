@@ -88,7 +88,7 @@ return {
           ['<C-e>'] = cmp.mapping.abort(),
           ['<CR>'] = cmp.mapping.confirm({ select = false, }), -- Accept currently selected item. Set `select` to `false` to only confirm explicitly selected items.
           ['<Tab>'] = cmp.mapping.confirm({ select = true }),
-          ['.'] = cmp.mapping.confirm({ select = false }),
+          -- ['.'] = cmp.mapping.confirm({ select = false }),
           ['('] = cmp.mapping.confirm({ select = false }),
           ['<M-j>'] = cmp.mapping.select_next_item({ behavior = cmp.SelectBehavior.Select }),
           ['<M-k>'] = cmp.mapping.select_prev_item({ behavior = cmp.SelectBehavior.Select }),

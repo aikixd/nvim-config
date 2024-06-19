@@ -38,13 +38,14 @@ return {
 
             local config = require('config')
 
+            -- Mappings --
             -- Generic LSP mappings
             for _, k in ipairs(config.mapping.get_filtered('lsp')) do
               k.opts.buffer = buffer
               vim.keymap.set(k.mode, k.lhs, k.rhs, k.opts)
             end
 
-            -- Language specific mappings
+            -- Language specific mappings, overrides generic on collision
             for _, k in ipairs(config.mapping.get_filtered('lsp-' .. vim.bo.filetype)) do
               k.opts.buffer = buffer
               vim.keymap.set(k.mode, k.lhs, k.rhs, k.opts)
@@ -55,16 +56,23 @@ return {
       )
 
       -- Extend client capabilities with cmp-nvim
-      local base_capabilities = vim .tbl_deep_extend( "force",
+      local base_capabilities = vim.tbl_deep_extend( "force",
         vim.lsp.protocol.make_client_capabilities(),
         require("cmp_nvim_lsp").default_capabilities())
 
       -- Lua
       local lua_config = require('plugins/lsp/configs/lua').lspconfig
-      lua_config.capabilities = vim .tbl_deep_extend( 'force',
+      lua_config.capabilities = vim.tbl_deep_extend('force',
         base_capabilities,
         lua_config.capabilities or {})
       require('lspconfig').lua_ls.setup(lua_config);
+
+      -- Solidity
+      local solidity_config = require('plugins/lsp/configs/solidity').lspconfig
+      solidity_config.capabilities = vim.tbl_deep_extend('force',
+        base_capabilities,
+        solidity_config.capabilities or {})
+      require('lspconfig').solidity.setup(solidity_config);
 
       -- Rust is configured via rust-tools
     end
@@ -113,7 +121,7 @@ return {
   -- Rust again, with different plug. This is a spiritual (and perhaps real) successor of rust-tools.
   {
     'mrcjkb/rustaceanvim',
-    version = '^3', -- Recommended
+    -- version = '^3', -- Recommended
     ft = { 'rust' },
     event = 'VeryLazy',
     dependencies = {
@@ -159,6 +167,27 @@ return {
               procMacro = {
                 enable = true,
               },
+              inlayHints = { -- Placed to make toggling easier
+                bindingModeHints = {
+                  enable = true
+                },
+                closureCaptureHints = {
+                  enable = true
+                },
+                discriminantHints = {
+                  enable = true
+                },
+                expressionAdjustmentHints = {
+                  enable = "always"
+                },
+                implicitDrops = {
+                  enable = true
+                },
+                lifetimeElisionHints = {
+                  enable = "always",
+                  useParameterNames = true
+                },
+              }
             },
           },
         },

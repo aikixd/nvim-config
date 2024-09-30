@@ -3,6 +3,7 @@ local M = {}
 
 M.rust = {}
 
+-- Changes an inlay setting for lsp.
 local toggle_setting = function(toggle_fn)
   -- https://www.reddit.com/r/neovim/comments/19dodgd/how_can_i_dynamicly_change_lsp_configuration/
 
@@ -25,12 +26,60 @@ local toggle_setting = function(toggle_fn)
   end
 end
 
+function M.rust.toggle_binding_mode()
+  local toggle_fn = function (settings)
+    if settings.inlayHints.bindingModeHints.enable == false then
+      settings.inlayHints.bindingModeHints.enable = true
+    else
+      settings.inlayHints.bindingModeHints.enable = false
+    end
+  end
+
+  toggle_setting(toggle_fn)
+end
+
 function M.rust.toggle_captures()
   local toggle_fn = function (settings)
     if settings.inlayHints.closureCaptureHints.enable == false then
       settings.inlayHints.closureCaptureHints.enable = true
     else
       settings.inlayHints.closureCaptureHints.enable = false
+    end
+  end
+
+  toggle_setting(toggle_fn)
+end
+
+function M.rust.toggle_discriminants()
+  local toggle_fn = function (settings)
+    if settings.inlayHints.discriminantHints.enable == false then
+      settings.inlayHints.discriminantHints.enable = true
+    else
+      settings.inlayHints.discriminantHints.enable = false
+    end
+  end
+
+  toggle_setting(toggle_fn)
+end
+
+function M.rust.toggle_expression_adjustments()
+  local toggle_fn = function (settings)
+    if settings.inlayHints.expressionAdjustmentHints.enable == false then
+      settings.inlayHints.expressionAdjustmentHints.enable = true
+    else
+      settings.inlayHints.expressionAdjustmentHints.enable = false
+    end
+  end
+
+  toggle_setting(toggle_fn)
+end
+
+function M.rust.toggle_drops()
+  local toggle_fn = function (settings)
+    if settings.inlayHints.implicitDrops.enable == false then
+      settings.inlayHints.implicitDrops.enable = true
+    else
+      settings.inlayHints.implicitDrops.enable = false
     end
   end
 

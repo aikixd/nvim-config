@@ -38,7 +38,7 @@ function M.setup(opts)
 
   vim.keymap.set({"n","v","i","o"}, "<C-i>", "<C-i>")
   -- vim.keymap.set({"n","v","i","o"}, "<Tab>", "<Tab>")
-  vim.keymap.set({"n"}, "<Tab>", "<Tab>")
+  vim.keymap.set({"n"}, "<Tab>", "<Tab>", { desc = "Fixed tab" })
   require('config.map_fixes').config_netrw_explorer()
 
   -- Icons
@@ -50,6 +50,12 @@ function M.setup(opts)
     {text = " ", texthl = "DiagnosticSignInfo"})
   vim.fn.sign_define("DiagnosticSignHint",
     {text = "󰌵", texthl = "DiagnosticSignHint"})
+
+  -- Diagnostics
+
+  vim.diagnostic.config({
+    severity_sort = true
+  })
 
 
   vim.cmd("helptags ALL")

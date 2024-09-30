@@ -158,6 +158,7 @@ return {
         server = {
           settings = {
             ['rust-analyzer'] = {
+              capabilities = require("cmp_nvim_lsp").default_capabilities(),
               checkOnSave = true,
               check = {
                 enable = true,

@@ -22,6 +22,7 @@ return {
       require("util").dbg("setting cmp")
 
       local cmp = require('cmp')
+      local compare = require('cmp.config.compare')
 
       -- Create new hl groups with fg and bg swapped. Used for `kind` display.
       local default = vim.api.nvim_get_hl(0, { name = 'Normal' })
@@ -80,6 +81,9 @@ return {
             vim_item.kind_hl_group = "CmpItemKind" .. kind_name .. "Inv"
             vim_item.menu = sources[entry.source.name]
 
+            -- For some reason snippets are duplicated
+            if kind_name == "Snippet" then vim_item.dup = 0 end
+
             return vim_item
           end
         },
@@ -101,6 +105,20 @@ return {
             require('luasnip').lsp_expand(args.body)
           end
         },
+        sorting = {
+          comparators = {
+            compare.offset,
+            compare.exact,
+            -- compare.scopes,
+            compare.score,
+            compare.recently_used,
+            compare.locality,
+            compare.kind,
+            compare.sort_text,
+            -- compare.length,
+            compare.order,
+          },
+        },
         sources = cmp.config.sources({
           { name = 'nvim_lsp' },
           { name = 'nvim_lua' },
@@ -116,6 +134,9 @@ return {
             -- border = 'rounded',
           },
         },
+        performance = {
+          max_view_entries = 1000
+        }
       }
     end
   },

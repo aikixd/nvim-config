@@ -1,0 +1,18 @@
+*this.git* Working with git
+
+HOW TO                                                        *this.git.how* ~
+
+Diffs ~
+
+`:dif` - force diff update [Complex and inline changes aren't triggering
+updates].
+
+`[c`,`]c` - Prev/next hunk.
+`do` - Pull from other buf.
+`dp` - Push to other buf.
+
+<do>
+
+Open history ~
+
+vim:tw=78:ts=8:noet:ft=help:norl:

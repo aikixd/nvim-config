@@ -153,20 +153,35 @@ return {
         },
         dap = {
           adapter = adapter,
-          
-        }, 
+        },
+        -- https://rust-analyzer.github.io/manual.html#configuration
         server = {
+          -- https://rust-analyzer.github.io/manual.html#troubleshooting
+          -- Env for RA server
+          extraEnv = {
+          --   RA_LOG = "lsp_server=debug"
+          },
           settings = {
             ['rust-analyzer'] = {
+              -- Env for cargo
+              extraEnv = { },
               capabilities = require("cmp_nvim_lsp").default_capabilities(),
+              cargo = {
+                -- allTargets = true, -- default
+                -- features = "all"
+              },
               checkOnSave = true,
               check = {
+                -- allTargets = true,
                 enable = true,
                 -- command = 'clippy',
-                features = 'all',
+                -- features = "all",
               },
               procMacro = {
                 enable = true,
+              },
+              trace = {
+                -- server = "verbose"
               },
               inlayHints = { -- Placed to make toggling easier
                 bindingModeHints = {

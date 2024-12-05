@@ -162,10 +162,10 @@ M.keys = {
     mk_map("nv",  "<S-z>", "<C-r>", "Redo"),
 
     -- Section: Symbols
-    mk_map("nv", "]d", function () vim.diagnostic.jump({ count = 1 }) end, "Next diagnostic"),
-    mk_map("nv", "[d", function () vim.diagnostic.jump({ count = -1 }) end, "Next diagnostic"),
-    mk_map("nv", "]e", function () vim.diagnostic.jump({ count = 1, severity = vim.diagnostic.severity.ERROR }) end, "Next error"),
-    mk_map("nv", "[e", function () vim.diagnostic.jump({ count = -1, severity = vim.diagnostic.severity.ERROR }) end, "Next error"),
+    mk_map("nv", "]d", function () vim.diagnostic.goto_next() end, "Next diagnostic"),
+    mk_map("nv", "[d", function () vim.diagnostic.goto_prev() end, "Next diagnostic"),
+    mk_map("nv", "]e", function () vim.diagnostic.goto_next({ severity = vim.diagnostic.severity.ERROR }) end, "Next error"),
+    mk_map("nv", "[e", function () vim.diagnostic.goto_prev({ severity = vim.diagnostic.severity.ERROR }) end, "Next error"),
     mk_map("nv", "[g", function () require('gitsigns').prev_hunk() end, "Previous git hunk", "gitsigns"),
     mk_map("nv", "]g", function () require('gitsigns').next_hunk() end, "Next git hunk", "gitsigns"),
 

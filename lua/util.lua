@@ -125,7 +125,7 @@ end
 
 
 function M.key_canon_to_lazy(map)
-  return { map.lhs, map.rhs, mode = map.mode, desc = map.opts.desc } 
+  return { map.lhs, map.rhs, mode = map.mode, desc = map.opts.desc }
 end
 
 function M.map(tbl, fn)
@@ -135,13 +135,13 @@ function M.map(tbl, fn)
 end
 
 function M.dbg(msg, abbr)
-  if M.debugging then 
+  if M.debugging then
     if type(msg) == "table" then
       abbr = abbr or ""
       vim.print(("dbg %s:"):format(abbr))
       vim.print(msg)
     else
-      vim.print("dbg: " .. msg) 
+      vim.print("dbg: " .. msg)
     end
   end
 end

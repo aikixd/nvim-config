@@ -27,7 +27,8 @@ function M.get_selection_line_range(offset)
   return { ls + offset, le + offset }
 end
 
-function M.print_to_buffer(text)
+function M.to_temp_buf(text)
+  -- TODO: handle deleting the buffer.
   local buf = vim.api.nvim_create_buf(false, true)
   vim.api.nvim_buf_set_lines(buf, 0, -1, false, vim.split(text, "\n", { trimempty = true }))
   vim.api.nvim_set_current_buf(buf)

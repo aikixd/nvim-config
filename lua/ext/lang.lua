@@ -1,17 +1,25 @@
 local qol = require('ext/qol')
 local M = {}
 
-M.rust = {}
+M.rust = {
+  config_override = {
+    cfg = {
+      setTest = true
+    }
+  }
+}
 
 -- Changes an inlay setting for lsp.
-local toggle_setting = function(toggle_fn)
+local toggle_setting = function(pre_fn, toggle_fn, post_fn)
   -- https://www.reddit.com/r/neovim/comments/19dodgd/how_can_i_dynamicly_change_lsp_configuration/
 
   local clients = vim.lsp.get_clients({ name = "rust-analyzer" })
 
   for _, c in ipairs(clients) do
-    local inlay_enabled = vim.lsp.inlay_hint.is_enabled()
-    if inlay_enabled then vim.lsp.inlay_hint.enable(false) end
+    -- local inlay_enabled = vim.lsp.inlay_hint.is_enabled()
+    -- if inlay_enabled then vim.lsp.inlay_hint.enable(false) end
+
+    pre_fn()
 
     local settings = c.config.settings["rust-analyzer"]
 
@@ -20,10 +28,37 @@ local toggle_setting = function(toggle_fn)
     -- https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#workspace_didChangeConfiguration
     c.notify("workspace/didChangeConfiguration", { settings = settings })
 
-    -- Defer the inlay to be enabled after nvim finishes processing the udpate
-    if inlay_enabled then vim.defer_fn(function () vim.lsp.inlay_hint.enable(true) end, 0) end
+    post_fn()
+
+    -- -- Defer the inlay to be enabled after nvim finishes processing the udpate
+    -- if inlay_enabled then vim.defer_fn(function () vim.lsp.inlay_hint.enable(true) end, 0) end
 
   end
+end
+
+local toggle_inlay_setting = function (toggle_fn)
+  local inlay_enabled = vim.lsp.inlay_hint.is_enabled()
+
+  local pre = function ()
+    if inlay_enabled then vim.lsp.inlay_hint.enable(false) end
+  end
+
+  local post = function ()
+    -- Defer the inlay to be enabled after nvim finishes processing the udpate
+    if inlay_enabled then vim.defer_fn(function () vim.lsp.inlay_hint.enable(true) end, 0) end
+  end
+
+  toggle_setting(pre, toggle_fn, post)
+end
+
+function M.rust.toggle_set_test()
+  if M.rust.config_override.cfg.setTest == false then
+    M.rust.config_override.cfg.setTest = true
+  else
+    M.rust.config_override.cfg.setTest = false
+  end
+
+  vim.cmd("RustLsp reloadWorkspace")
 end
 
 function M.rust.toggle_binding_mode()
@@ -35,7 +70,7 @@ function M.rust.toggle_binding_mode()
     end
   end
 
-  toggle_setting(toggle_fn)
+  toggle_inlay_setting(toggle_fn)
 end
 
 function M.rust.toggle_captures()
@@ -47,7 +82,7 @@ function M.rust.toggle_captures()
     end
   end
 
-  toggle_setting(toggle_fn)
+  toggle_inlay_setting(toggle_fn)
 end
 
 function M.rust.toggle_discriminants()
@@ -59,7 +94,7 @@ function M.rust.toggle_discriminants()
     end
   end
 
-  toggle_setting(toggle_fn)
+  toggle_inlay_setting(toggle_fn)
 end
 
 function M.rust.toggle_expression_adjustments()
@@ -71,7 +106,7 @@ function M.rust.toggle_expression_adjustments()
     end
   end
 
-  toggle_setting(toggle_fn)
+  toggle_inlay_setting(toggle_fn)
 end
 
 function M.rust.toggle_drops()
@@ -83,7 +118,7 @@ function M.rust.toggle_drops()
     end
   end
 
-  toggle_setting(toggle_fn)
+  toggle_inlay_setting(toggle_fn)
 end
 
 function M.rust.toggle_lifetimes()
@@ -96,7 +131,7 @@ function M.rust.toggle_lifetimes()
     end
   end
 
-  toggle_setting(toggle_fn)
+  toggle_inlay_setting(toggle_fn)
 end
 
 return M

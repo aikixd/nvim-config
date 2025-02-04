@@ -141,6 +141,63 @@ return {
 
       require('util').dbg(adapter)
 
+      local server_settings = {
+        -- Env for cargo
+        extraEnv = { },
+        capabilities = require("cmp_nvim_lsp").default_capabilities(),
+        cargo = {
+          -- allTargets = true, -- default
+          -- features = "all"
+        },
+        cfg = {
+          setTest = true
+        },
+        checkOnSave = true,
+        check = {
+          -- allTargets = false,
+          enable = true,
+          -- command = 'clippy',
+          -- features = "all",
+        },
+        completion = {
+          privateEditable = {
+            enable = true
+          }
+        },
+        procMacro = {
+          enable = true,
+        },
+        trace = {
+          -- server = "verbose"
+        },
+        inlayHints = { -- Placed to make toggling easier
+          bindingModeHints = {
+            enable = true
+          },
+          closureCaptureHints = {
+            enable = true
+          },
+          discriminantHints = {
+            enable = true
+          },
+          expressionAdjustmentHints = {
+            enable = "always"
+          },
+          implicitDrops = {
+            enable = true
+          },
+          lifetimeElisionHints = {
+            enable = "always",
+            useParameterNames = true
+          },
+        }
+      }
+
+      server_settings = vim.tbl_deep_extend(
+        "force",
+        server_settings,
+        require('ext/lang').rust.config_override)
+
       vim.g.rustaceanvim = {
         tools = {
           hover_actions = {
@@ -149,7 +206,10 @@ return {
           },
           float_win_config = {
             auto_focus = true
-          }
+          },
+          -- on_initialized = function (health)
+          --   vim.print(health)
+          -- end
         },
         dap = {
           adapter = adapter,
@@ -162,49 +222,7 @@ return {
           --   RA_LOG = "lsp_server=debug"
           },
           settings = {
-            ['rust-analyzer'] = {
-              -- Env for cargo
-              extraEnv = { },
-              capabilities = require("cmp_nvim_lsp").default_capabilities(),
-              cargo = {
-                -- allTargets = true, -- default
-                -- features = "all"
-              },
-              checkOnSave = true,
-              check = {
-                -- allTargets = true,
-                enable = true,
-                -- command = 'clippy',
-                -- features = "all",
-              },
-              procMacro = {
-                enable = true,
-              },
-              trace = {
-                -- server = "verbose"
-              },
-              inlayHints = { -- Placed to make toggling easier
-                bindingModeHints = {
-                  enable = true
-                },
-                closureCaptureHints = {
-                  enable = true
-                },
-                discriminantHints = {
-                  enable = true
-                },
-                expressionAdjustmentHints = {
-                  enable = "always"
-                },
-                implicitDrops = {
-                  enable = true
-                },
-                lifetimeElisionHints = {
-                  enable = "always",
-                  useParameterNames = true
-                },
-              }
-            },
+            ['rust-analyzer'] = server_settings,
           },
         },
       }

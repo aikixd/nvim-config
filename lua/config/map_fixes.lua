@@ -72,4 +72,8 @@ function M.config_netrw_explorer()
     end
   })
 end
+
+function M.clear_remaps()
+  vim.keymap.del("n", "q")
+end
 return M

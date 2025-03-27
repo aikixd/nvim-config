@@ -37,11 +37,52 @@ return {
     }
   },
   {
+    "jmacadie/telescope-hierarchy.nvim",
+    dependencies = {
+      "nvim-telescope/telescope.nvim"
+    },
+  },
+  {
     "j-hui/fidget.nvim",
     opts = {
       progress = {
       }
     },
+    config = function (_, opts)
+      local fg = require("fidget")
+      local fgp = require("fidget.progress")
+      local lspu = require("ext.lsp")
+
+      fg.setup(opts)
+
+      vim.api.nvim_create_autocmd("LspRequest", {
+        callback = function(args)
+          if args.data.request.method == "textDocument/documentHighlight" then return end
+
+          if args.data.request.type == "pending" then
+            local handle = 
+              fgp.handle.create({
+                title = "LSP query",
+                message = args.data.request.method,
+                lsp_client = { name = args.data.client_id },
+              })
+
+            lspu.progress_handle_insert(args.data.request_id, handle)
+          elseif args.data.request.type == "error" then
+            local handle = lspu.progress_handle_take(args.data.request_id)
+            if handle == nil then return end
+            handle.message = handle.message .. " "
+            handle:finish()
+          else
+            local handle = lspu.progress_handle_take(args.data.request_id)
+            if handle == nil then return end
+            handle.message = handle.message .. " "
+            handle:finish()
+          end
+
+        end
+      })
+    end
   },
   {
     'echasnovski/mini.nvim',
@@ -55,6 +96,33 @@ return {
       require('mini.ai').setup()
 
       require('mini.comment').setup({
+      })
+
+      -- vim.keymap.del("n", "b")
+      vim.keymap.set("n", "b", "<nop>")
+
+
+      require('mini.surround').setup({
+        mappings = {
+          add = 'ba', -- Add surrounding in Normal and Visual modes
+          delete = 'bd', -- Delete surrounding
+          find = 'bf', -- Find surrounding (to the right)
+          find_left = 'bF', -- Find surrounding (to the left)
+          highlight = 'bh', -- Highlight surrounding
+          replace = 'br', -- Replace surrounding
+          update_n_lines = 'bn', -- Update `n_lines`
+        },
+
+        custom_surroundings = {
+          ['g'] = {
+            input = { '%f[%a_:][%w_:]+%b<>', '^.-<().*()>$' },
+            output = function()
+              local type_name = MiniSurround.user_input("Type name")
+              if type_name == nil then return nil end
+              return { left = ('%s<'):format(type_name), right = '>' }
+            end
+          }
+        }
       })
     end
   },
@@ -237,7 +305,7 @@ return {
   {
     'lewis6991/gitsigns.nvim',
     opts = {
-      _signs_staged_enable = false,
+      signs_staged_enable = true,
       current_line_blame_opts = {
         delay = 200,
         virt_text_pos = "right_align"
@@ -274,6 +342,34 @@ return {
   },
   {
     'Bekaboo/dropbar.nvim',
+    opts = {
+      bar = {
+        pick = {
+          pivots = 'asdfjkl;ghrtyuvbnm'
+        }
+      },
+      menu = {
+        -- keymaps = {
+        --   ['g'] = function() 
+        --     local utils = require('dropbar/utils')
+        --     local u = require('util')
+        --     local menu = utils.menu.get_current()
+        --     local bar = utils.bar.get_current()
+        --
+        --
+        --     vim.print('---')
+        --     -- u.print_buf(utils.bar.get({  }))
+        --     vim.print(bar)
+        --     vim.print('---')
+        --     vim.print(menu.prev_buf)
+        --     -- vim.print(menu.prev_menu == nil)
+        --
+        --     vim.print('---')
+        --     -- vim.print(menu.prev_menu.symbol_previewed.name)
+        --   end
+        -- }
+      }
+    }
     -- optional, but required for fuzzy finder support
     -- dependencies = {
     --   'nvim-telescope/telescope-fzf-native.nvim'

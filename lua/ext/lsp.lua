@@ -32,4 +32,16 @@ M.query_status = function ()
   end) 
 end
 
+local progress_handlers = {}
+
+M.progress_handle_insert = function(key, handle)
+  progress_handlers[key] = handle
+end
+
+M.progress_handle_take = function(key)
+  local r = progress_handlers[key]
+  progress_handlers[key] = nil
+  return r
+end
+
 return M

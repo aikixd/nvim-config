@@ -79,46 +79,6 @@ return {
   },
 
   -- Rust
-  -- Techically this is more than an LSP, perhaps a different location may suit better
-  {
-    'simrat39/rust-tools.nvim',
-    dependencies = {
-      'mason.nvim'
-    },
-    enabled = false,
-    event = 'VeryLazy',
-    config = function(_, _)
-      require('util').debug("setting rust")
-      local rt = require('rust-tools')
-
-      local lldb = require('mason-registry').get_package('codelldb')
-      local install_path = lldb:get_install_path()
-      local codelldb_path = install_path .. '/extension/adapter/codelldb'
-      local liblldb_path = install_path .. '/extension/lldb/lib/liblldb.so'
-
-      local adapter = require('rust-tools.dap').get_codelldb_adapter(codelldb_path, liblldb_path)
-
-      rt.setup({
-        tools = {
-          hover_actions = {
-            auto_focus = true
-          }
-        },
-        server = {
-          on_attach = function (_, buffer)
-            -- TODO: make overrides by lhs
-            vim.keymap.set("n", "<leader>ca", rt.code_action_group.code_action_group, { buffer = buffer, desc = "Code action" })
-            vim.keymap.set("n", "<leader>cq", rt.hover_actions.hover_actions, { buffer = buffer, desc = "Rust actions" })
-          end
-        },
-        dap = {
-          adapter = adapter
-        }
-      })
-    end
-  },
-
-  -- Rust again, with different plug. This is a spiritual (and perhaps real) successor of rust-tools.
   {
     'mrcjkb/rustaceanvim',
     -- version = '^3', -- Recommended
@@ -172,22 +132,22 @@ return {
         },
         inlayHints = { -- Placed to make toggling easier
           bindingModeHints = {
-            enable = true
+            enable = false
           },
           closureCaptureHints = {
-            enable = true
+            enable = false
           },
           discriminantHints = {
-            enable = true
+            enable = false
           },
           expressionAdjustmentHints = {
-            enable = "always"
+            enable = false
           },
           implicitDrops = {
-            enable = true
+            enable = false
           },
           lifetimeElisionHints = {
-            enable = "always",
+            enable = "never",
             useParameterNames = true
           },
         }
@@ -227,5 +187,12 @@ return {
         },
       }
     end
+  },
+
+  -- Haskell
+  {
+    'mrcjkb/haskell-tools.nvim',
+    version = '^4', -- Recommended
+    lazy = false, -- This plugin is already lazy
   }
 }

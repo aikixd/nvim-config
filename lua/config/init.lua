@@ -17,9 +17,24 @@ function M.setup(opts)
   vim.opt.confirm = true
   vim.opt.cursorlineopt = "both"
   vim.opt.cursorline = true
+  vim.opt.diffexpr = nil
+  vim.opt.diffopt = { 
+    "internal",
+    "filler",
+    "closeoff",
+    "context:12",
+    "algorithm:histogram",
+    "linematch:200",
+    "indent-heuristic",
+    "iwhite"
+  }
+  -- vim.opt.fillchars = 'fold'
   vim.opt.foldenable = false
-  vim.opt.foldexpr = "nvim_treesitter#foldexpr()"
+  vim.opt.foldexpr = 'v:lua.vim.treesitter.foldexpr()'
+  vim.opt.foldlevel = 20
+  -- vim.opt.foldexpr = "nvim_treesitter#foldexpr()"
   vim.opt.foldmethod = "expr"
+  vim.opt.foldtext = ''
   vim.opt.ignorecase = true
   vim.opt.list = true
   vim.opt.number = true
@@ -36,10 +51,12 @@ function M.setup(opts)
   vim.opt.softtabstop = 2
   vim.opt.shiftwidth = 2
 
+
   vim.keymap.set({"n","v","i","o"}, "<C-i>", "<C-i>")
   -- vim.keymap.set({"n","v","i","o"}, "<Tab>", "<Tab>")
   vim.keymap.set({"n"}, "<Tab>", "<Tab>", { desc = "Fixed tab" })
   require('config.map_fixes').config_netrw_explorer()
+  -- require('config.map_fixes').clear_remaps()
 
   -- Icons
   vim.fn.sign_define("DiagnosticSignError",
@@ -72,6 +89,15 @@ function M.setup(opts)
       end
     }
   )
+
+  -- Auto-refresh the status line when diagnostics change.
+  -- This should force Feline (or any statusline plugin) to update.
+  vim.api.nvim_create_autocmd("DiagnosticChanged", {
+    callback = function()
+      -- Force a redraw of the status lines in all windows
+      vim.cmd("redrawstatus")
+    end,
+  })
 
   vim.api.nvim_create_user_command(
     "CheckMap",

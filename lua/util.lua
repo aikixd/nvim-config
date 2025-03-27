@@ -150,4 +150,10 @@ function M.phl()
   display_highlight_groups()
 end
 
+function M.print_buf(obj)
+  local long_string = vim.inspect(obj)
+  vim.cmd [[ new ]]
+  vim.api.nvim_buf_set_lines(0, 0, -1, false, vim.split(long_string, '\n'))
+end
+
 return M

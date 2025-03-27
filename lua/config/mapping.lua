@@ -196,9 +196,11 @@ M.keys = {
     mk_map("n", "gd", function () require('gitsigns').toggle_deleted() end, "Show deleted lines", "gitsigns"),
     mk_map("n", "gm", "m", "Set mark"),
     mk_map("n", "gh", "<cmd>Telescope lsp_references<cr>", "Go to references", "lsp"),
+    mk_map("n", "gi", "<cmd>Telescope hierarchy incoming_calls<cr>", "Go to incoming calls", "lsp"),
     mk_map("n", "gj", "<cmd>Telescope lsp_definitions<cr>", "Go to definitions", "lsp"),
     mk_map("n", "gk", "<cmd>Telescope lsp_implementations<cr>", "Go to implementations", "lsp"),
     mk_map("n", "gl", "<cmd>Telescope lsp_type_definitions<cr>", "Go to type definitions", "lsp"),
+    mk_map("n", "go", "<cmd>Telescope hierarchy outgoing_calls<cr>", "Go to outgoing calls", "lsp"),
     mk_map("n", "gr", "q", "Macro records"),
 
     mk_map("nv", "<C-p>", "\"0p", "Paste after"),
@@ -220,8 +222,8 @@ M.keys = {
 
     -- Section: <leader>c
     mk_map("n", "<leader>ca", function() vim.lsp.buf.code_action() end, "Code action", "lsp"),
-    mk_map("n", "<leader>ca", "<cmd>RustLsp codeAction<cr>", "Code action", "lsp-rust"),
-    mk_map("v", "<leader>ca", "<cmd>RustLsp hover range<cr>", "Code action", "lsp-rust"),
+    mk_map("nv", "<leader>ca", "<cmd>RustLsp codeAction<cr>", "Code action", "lsp-rust"),
+    -- mk_map("v", "<leader>ca", "<cmd>RustLsp hover range<cr>", "Code action", "lsp-rust"),
     mk_map("n", "<leader>cd", function() vim.diagnostic.open_float({ source = true, border = 'rounded' }) end, "Show diagnostics"),
     mk_map("n", "<leader>cD", function() vim.diagnostic.open_float({ source = true, severity = { min = vim.diagnostic.severity.HINT }, border = 'rounded' }) end, "Show diagnostics"),
     mk_map("n", "<leader>ce", function() vim.cmd.RustLsp('explainError') end, "Explain error", "lsp-rust"),
@@ -269,7 +271,7 @@ M.keys = {
     mk_map({ "n", "v" }, "<leader>fw", ":Telescope jumplist<cr>", "Jump list", "telescope"),
 
     -- Section: <leader>g
-    mk_map("n", "<leader>ga", function() require("ext/git").gitsigns_actions() end, "Toggle line blame", "gitsigns"),
+    mk_map("n", "<leader>ga", function() require("ext/git").gitsigns_actions() end, "Git actions", "gitsigns"),
     mk_map("nv", "<leader>gb", "<cmd>Gitsigns toggle_current_line_blame<cr>", "Toggle line blame", "gitsigns"),
     -- mk_map("nv", "<leader>gB", function() require("gitsigns").blame_line() end, "See line blame", "gitsigns"),
     mk_map("nv", "<leader>gg", function() require("ext/git").toggle_extended_info() end, "Toggle details"),
@@ -285,6 +287,7 @@ M.keys = {
     mk_map("v", "<leader>gs", function() require("gitsigns").stage_hunk(qol.get_selection_line_range()) end, "Stage hunk", "gitsigns"),
 
     -- Section: <leader>m
+    mk_map("nv", "<leader>dw", "", "Toggle diff white space"),
     mk_map({ "n", "v" }, "<leader>mh", ":Telescope help_tags<cr>", "Search help tags", "telescope"),
     mk_map({ "n", "v" }, "<leader>ml", "<cmd>Lazy<cr>", "Plugin mgmt"),
     mk_map("v", "<leader>mr", run_lua_from_visual, "Run selected lua"),
@@ -303,7 +306,7 @@ M.keys = {
     mk_map("n", "<C-Right>", "<cmd>vertical resize +2<cr>", { desc = "Increase window width" }),
 
     -- Terminal Mappings
-    mk_map("t", "<esc><esc>", "<c-\\><c-n>", { desc = "Normal Mode" }),
+    mk_map("t", "<esc><esc>", "<c-\\><c-n>", { desc = "which_key_ignore" }),
     mk_map("t", "<C-h>", "<cmd>wincmd h<cr>", { desc = "To left window" }),
     mk_map("t", "<C-j>", "<cmd>wincmd j<cr>", { desc = "To lower window" }),
     mk_map("t", "<C-k>", "<cmd>wincmd k<cr>", { desc = "To upper window" }),

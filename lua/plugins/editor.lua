@@ -2,8 +2,7 @@ local util = require('util')
 local config = require('config')
 
 return {
-  {
-    'nvim-telescope/telescope.nvim',
+  { 'nvim-telescope/telescope.nvim',
     branch = '0.1.x',
     dependencies = { 'nvim-lua/plenary.nvim' },
     keys =
@@ -36,14 +35,105 @@ return {
       }
     }
   },
-  {
-    "jmacadie/telescope-hierarchy.nvim",
+  { "jmacadie/telescope-hierarchy.nvim",
     dependencies = {
       "nvim-telescope/telescope.nvim"
     },
   },
+  { 'echasnovski/mini.nvim',
+    version = false,
+    event = "VeryLazy",
+    config = function(_, _)
+      require('mini.indentscope').setup({
+        symbol = '│'
+      })
+
+      require('mini.ai').setup()
+
+      require('mini.comment').setup({})
+      require('mini.statusline').setup({
+        content = {
+          active = function()
+            local mode, mode_hl = MiniStatusline.section_mode({ trunc_width = 120 })
+            local diff          = MiniStatusline.section_diff({ trunc_width = 75 })
+            local diagnostics   = MiniStatusline.section_diagnostics({ trunc_width = 75 })
+            local lsp           = MiniStatusline.section_lsp({ trunc_width = 75 })
+            local filename      = MiniStatusline.section_filename({ trunc_width = 140 })
+            local fileinfo      = MiniStatusline.section_fileinfo({ trunc_width = 120 })
+            local location      = MiniStatusline.section_location({ trunc_width = 75 })
+            local search        = MiniStatusline.section_searchcount({ trunc_width = 75 })
+
+            return MiniStatusline.combine_groups({
+              { hl = mode_hl,                  strings = { mode } },
+              { hl = 'MiniStatuslineDevinfo',  strings = { diff, diagnostics, lsp } },
+              '%<', -- Mark general truncate point
+              { hl = 'MiniStatuslineFilename', strings = { filename } },
+              '%=', -- End left alignment
+              { hl = 'MiniStatuslineFileinfo', strings = { fileinfo } },
+              { hl = mode_hl,                  strings = { search, location } },
+            })
+          end
+        }
+      })
+
+      -- vim.keymap.del("n", "b")
+      vim.keymap.set("n", "b", "<nop>")
+
+
+      require('mini.surround').setup({
+        mappings = {
+          add = 'ba', -- Add surrounding in Normal and Visual modes
+          delete = 'bd', -- Delete surrounding
+          find = 'bf', -- Find surrounding (to the right)
+          find_left = 'bF', -- Find surrounding (to the left)
+          highlight = 'bh', -- Highlight surrounding
+          replace = 'br', -- Replace surrounding
+          update_n_lines = 'bn', -- Update `n_lines`
+        },
+
+        custom_surroundings = {
+          ['g'] = {
+            input = { '%f[%a_:][%w_:]+%b<>', '^.-<().*()>$' },
+            output = function()
+              local type_name = MiniSurround.user_input("Type name")
+              if type_name == nil then return nil end
+              return { left = ('%s<'):format(type_name), right = '>' }
+            end
+          }
+        }
+      })
+    end
+  },
   {
-    "j-hui/fidget.nvim",
+    "folke/snacks.nvim",
+    priority = 1000,
+    lazy = false,
+    opts = {
+      debug = {
+        enabled = true
+      },
+      notifier = {
+        enabled = true
+      },
+      picker = {
+        enabled = true
+      },
+      profiler = {
+        enabled = true
+      }
+    },
+    keys = util.map(
+      config.mapping.get_filtered('snacks'),
+      util.key_canon_to_lazy
+    ),
+  },
+  { "lukas-reineke/indent-blankline.nvim",
+    main = "ibl",
+    opts = {
+    },
+    enabled = false,
+  },
+  { "j-hui/fidget.nvim",
     opts = {
       progress = {
       }
@@ -84,55 +174,7 @@ return {
       })
     end
   },
-  {
-    'echasnovski/mini.nvim',
-    version = false,
-    event = "VeryLazy",
-    config = function(_, _)
-      -- require('mini.indentscope').setup({
-      --   symbol = '│'
-      -- })
-
-      require('mini.ai').setup()
-
-      require('mini.comment').setup({
-      })
-
-      -- vim.keymap.del("n", "b")
-      vim.keymap.set("n", "b", "<nop>")
-
-
-      require('mini.surround').setup({
-        mappings = {
-          add = 'ba', -- Add surrounding in Normal and Visual modes
-          delete = 'bd', -- Delete surrounding
-          find = 'bf', -- Find surrounding (to the right)
-          find_left = 'bF', -- Find surrounding (to the left)
-          highlight = 'bh', -- Highlight surrounding
-          replace = 'br', -- Replace surrounding
-          update_n_lines = 'bn', -- Update `n_lines`
-        },
-
-        custom_surroundings = {
-          ['g'] = {
-            input = { '%f[%a_:][%w_:]+%b<>', '^.-<().*()>$' },
-            output = function()
-              local type_name = MiniSurround.user_input("Type name")
-              if type_name == nil then return nil end
-              return { left = ('%s<'):format(type_name), right = '>' }
-            end
-          }
-        }
-      })
-    end
-  },
-  {
-    "lukas-reineke/indent-blankline.nvim",
-    main = "ibl",
-    opts = { }
-  },
-  {
-    "nvim-neo-tree/neo-tree.nvim",
+  { "nvim-neo-tree/neo-tree.nvim",
     -- branch = "v3.x",
     dependencies = {
       "nvim-lua/plenary.nvim",
@@ -158,7 +200,7 @@ return {
         mappings = {
           ["<space>"] = {
             "toggle_node",
-            nowait = false, -- disable `nowait` if you have existing combos starting with this char that you want to use
+            nowait = true, -- disable `nowait` if you have existing combos starting with this char that you want to use
           },
           ["<2-LeftMouse>"] = {
             "open",
@@ -193,7 +235,8 @@ return {
           },
           ["g"] = {
             "open",
-            desc = "Open"
+            nowait = true,
+            desc = "Open",
           },
           -- ["s"] = "vsplit_with_window_picker",
           ["t"] = {
@@ -255,10 +298,10 @@ return {
             "copy",
             desc = "Copy"
           }, -- takes text input for destination, also accepts the config.show_path and config.insert_as options
-          ["m"] = {
-            "move",
-            desc = "Move"
-          }, -- takes text input for destination, also accepts the config.show_path and config.insert_as options
+          -- ["m"] = {
+          --   "move",
+          --   desc = "Move"
+          -- }, -- takes text input for destination, also accepts the config.show_path and config.insert_as options
           ["e"] = {
             "toggle_auto_expand_width",
             desc = "Toggle auto-expand width"
@@ -302,8 +345,7 @@ return {
     --  end
     --end,
   },
-  {
-    'lewis6991/gitsigns.nvim',
+  { 'lewis6991/gitsigns.nvim',
     opts = {
       signs_staged_enable = true,
       current_line_blame_opts = {
@@ -319,8 +361,7 @@ return {
         util.key_canon_to_lazy
       ),
   },
-  {
-    "sindrets/diffview.nvim",
+  { "sindrets/diffview.nvim",
     opts = {
       view = {
         default = {
@@ -340,8 +381,7 @@ return {
         util.key_canon_to_lazy
       ),
   },
-  {
-    'Bekaboo/dropbar.nvim',
+  { 'Bekaboo/dropbar.nvim',
     opts = {
       bar = {
         pick = {
@@ -375,8 +415,7 @@ return {
     --   'nvim-telescope/telescope-fzf-native.nvim'
     -- }
   },
-  {
-    "folke/flash.nvim",
+  { "folke/flash.nvim",
     event = "VeryLazy",
     opts = {},
     keys =

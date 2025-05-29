@@ -116,8 +116,10 @@ local display_highlight_groups = function ()
   local buf = vim.api.nvim_create_buf(false, true)
   vim.api.nvim_buf_set_lines(buf, 0, -1, false, formatted_lines)
 
+  local ns = vim.api.nvim_create_namespace("")
+
   for i, line_info in ipairs(lines) do
-    vim.api.nvim_buf_add_highlight(buf, -1, line_info.hl_g, i - 1, line_info.hl_s, line_info.hl_e)
+    vim.hl.range(buf, ns, line_info.hl_g, {i-1, line_info.hl_s}, {i-1, line_info.hl_e})
   end
 
   vim.api.nvim_set_current_buf(buf)

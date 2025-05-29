@@ -2,8 +2,7 @@ local util = require('util')
 local config = require('config')
 
 return {
-  {
-    'mfussenegger/nvim-dap',
+  { 'mfussenegger/nvim-dap',
     lazy = true,
     keys = util.map(
       config.mapping.get_filtered('dap'),
@@ -25,8 +24,7 @@ return {
       -- dap.set_exception_breakpoints({'rust_panic'})
     end
   },
-  {
-    'rcarriga/nvim-dap-ui',
+  { 'rcarriga/nvim-dap-ui',
     dependencies = {
       "nvim-neotest/nvim-nio"
     },

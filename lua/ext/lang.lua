@@ -1,13 +1,7 @@
 local qol = require('ext/qol')
 local M = {}
 
-M.rust = {
-  config_override = {
-    cfg = {
-      setTest = true
-    }
-  }
-}
+M.rust = { }
 
 -- Changes an inlay setting for lsp.
 local toggle_setting = function(pre_fn, toggle_fn, post_fn)

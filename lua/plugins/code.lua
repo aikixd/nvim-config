@@ -15,7 +15,7 @@ return {
       'hrsh7th/cmp-buffer',
       'hrsh7th/cmp-path',
       'hrsh7th/cmp-nvim-lsp',
-      'LuaSnip',
+      'L3MON4D3/LuaSnip',
       'saadparwaiz1/cmp_luasnip',
     },
     opts = function ()
@@ -23,6 +23,20 @@ return {
 
       local cmp = require('cmp')
       local compare = require('cmp.config.compare')
+      local types = require('cmp.types')
+
+      local compare_kind = function (left, right)
+        local kind1 = left:get_kind()  --- @type lsp.CompletionItemKind | number
+        local kind2 = right:get_kind() --- @type lsp.CompletionItemKind | number
+
+        -- if kind1 == types.lsp.CompletionItemKind.Field then return true end
+        -- if kind2 == types.lsp.CompletionItemKind.Field then return false end
+        --
+        -- if kind1 == types.lsp.CompletionItemKind.Snippet then return false end
+        -- if kind2 == types.lsp.CompletionItemKind.Snippet then return true end
+        -- Fallback to default
+        return compare.kind(left, right)
+      end
 
       -- Create new hl groups with fg and bg swapped. Used for `kind` display.
       local default = vim.api.nvim_get_hl(0, { name = 'Normal' })
@@ -93,7 +107,7 @@ return {
           ['<CR>'] = cmp.mapping.confirm({ select = false, }), -- Accept currently selected item. Set `select` to `false` to only confirm explicitly selected items.
           ['<Tab>'] = cmp.mapping.confirm({ select = true }),
           -- ['.'] = cmp.mapping.confirm({ select = false }),
-          ['('] = cmp.mapping.confirm({ select = false }),
+          -- ['('] = cmp.mapping.confirm({ select = false }),
           ['<M-j>'] = cmp.mapping.select_next_item({ behavior = cmp.SelectBehavior.Select }),
           ['<M-k>'] = cmp.mapping.select_prev_item({ behavior = cmp.SelectBehavior.Select }),
           ['<M-u>'] = cmp.mapping.scroll_docs(-4),
@@ -113,7 +127,7 @@ return {
             compare.score,
             compare.recently_used,
             compare.locality,
-            compare.kind,
+            compare_kind, -- Wraps compare.kind
             compare.sort_text,
             -- compare.length,
             compare.order,

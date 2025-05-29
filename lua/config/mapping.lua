@@ -30,6 +30,7 @@ M.groups = {
     { "<leader>c", group = "code" },
     { "<leader>f", group = "find/fs" },
     { "<leader>m", group = "meta" },
+    { "<leader>mp", group = "profiler" },
     { "<leader>s", group = "search" },
     { "z", group = "generic" },
   },
@@ -99,7 +100,9 @@ local move_buf = function (dir)
 end
 
 local switch_buf_last = function ()
-  if vim.fn.getbufinfo(vim.fn.bufnr('#'))[1].listed == 1 then
+  local bufnr = vim.fn.bufnr('#')
+  if bufnr == -1 then return end
+  if vim.fn.getbufinfo(bufnr)[1].listed == 1 then
     vim.cmd("b#")
     return
   end
@@ -130,7 +133,6 @@ local hover_action = function ()
     vim.keymap.set(
       'n', 'g', "<Cmd>lua require('dap.ui').trigger_actions({ mode = 'first' })<CR>", 
       { buffer = view.buf, desc = "Expand", nowait = true })
-    vim.print(view)
   else
     vim.lsp.buf.hover()
   end
@@ -142,6 +144,7 @@ M.keys = {
   common = {
     mk_map("n", "<esc>", ":noh<cr><esc>", "Escape and clear hlsearch"),
     mk_map("i", "<M-Space>", "<space><left>", "abc"),
+    mk_map("n", "<C-_>", function () Snacks.picker.lines() end, "Search for line"),
     mk_map("n", "<C-\\>", function () require("which-key").show() end, "Which key"),
     mk_map("v", "<C-\\>", function () require("which-key").show() end, "Which key"),
     mk_map("i", "<C-\\>", function () require("which-key").show() end, "Which key"),
@@ -153,13 +156,20 @@ M.keys = {
     mk_map("nv", "<M-,>", "<C-o>", "Back"),
     mk_map("nv", "<M-.>", "<C-i>", "Forward"),
     mk_map("vi", "<C-s>", "<cmd>w<cr>", "Write buffer"),
-    -- mk_map("n", "<C-i>", "<cmd>IconPickerNormal<cr>", "Insert symbol", "icons"),
-    -- mk_map("i", "<C-i>", "<cmd>IconPickerInsert<cr>", "Insert symbol", "icons"),
+    mk_map("n", "<C-i>", "<cmd>IconPickerNormal<cr>", "Insert symbol", "icons"),
+    mk_map("i", "<C-i>", "<cmd>IconPickerInsert<cr>", "Insert symbol", "icons"),
     mk_map("ni", "<C-q>", function () vim.lsp.buf.signature_help() end, "Signature help", 'lsp'),
     mk_map("niv", "<C-s>", "<cmd>w<cr><esc>", "Write buffer"),
     -- mk_map("nvio", "<C-w>", "<cmd>q<cr>", "Close window"),
     mk_map("nvi", "<C-z>", "u", "Undo"),
     mk_map("nv",  "<S-z>", "<C-r>", "Redo"),
+
+    mk_map("i", "<M-[>", "[]<left>");
+    mk_map("i", "<M-]>", "[<cr>]<esc><S-o>");
+    mk_map("i", "<M-{>", "{}<left>");
+    mk_map("i", "<M-}>", "{<cr>}<esc><S-o>");
+    mk_map("i", "<M-9>", "()<left>");
+    mk_map("i", "<M-0>", "(<cr>)<esc><S-o>");
 
     -- Section: Symbols
     mk_map("nv", "]d", function () vim.diagnostic.goto_next() end, "Next diagnostic"),
@@ -195,11 +205,12 @@ M.keys = {
     -- Section: g
     mk_map("n", "gd", function () require('gitsigns').toggle_deleted() end, "Show deleted lines", "gitsigns"),
     mk_map("n", "gm", "m", "Set mark"),
-    mk_map("n", "gh", "<cmd>Telescope lsp_references<cr>", "Go to references", "lsp"),
+    mk_map("n", "gh", function () Snacks.picker.lsp_references() end, "Go to references", "lsp"),
     mk_map("n", "gi", "<cmd>Telescope hierarchy incoming_calls<cr>", "Go to incoming calls", "lsp"),
-    mk_map("n", "gj", "<cmd>Telescope lsp_definitions<cr>", "Go to definitions", "lsp"),
-    mk_map("n", "gk", "<cmd>Telescope lsp_implementations<cr>", "Go to implementations", "lsp"),
-    mk_map("n", "gl", "<cmd>Telescope lsp_type_definitions<cr>", "Go to type definitions", "lsp"),
+    mk_map("n", "gj", function () Snacks.picker.lsp_definitions() end, "Go to definitions", "lsp"),
+    mk_map("n", "gJ", function () vim.lsp.buf.declaration() end, "Go to type definitions", "lsp"),
+    mk_map("n", "gk", function () Snacks.picker.lsp_implementations() end, "Go to implementations", "lsp"),
+    mk_map("n", "gl", function () Snacks.picker.lsp_type_definitions() end, "Go to type definitions", "lsp"),
     mk_map("n", "go", "<cmd>Telescope hierarchy outgoing_calls<cr>", "Go to outgoing calls", "lsp"),
     mk_map("n", "gr", "q", "Macro records"),
 
@@ -213,10 +224,9 @@ M.keys = {
     mk_map("nvo", "W", "B", "Previous WORD"),
 
     -- Section: <leader>b
-    -- mk_map("nvo", "<leader>bb", "<cmd>b#<cr>", "Other buffer"),
     mk_map("nv", "<leader>bb", switch_buf_last, "Other buffer"),
     mk_map("nv", "<leader>bd", "<cmd>bn | bd #<cr>", "Delete buffer"),
-    mk_map("nv", "<leader>bf", "<cmd>Telescope buffers sort_mru=true<cr>", "Find buffer", "telescope"),
+    mk_map("nv", "<leader>bf", function () Snacks.picker.buffers() end, "Find buffer", "snacks"),
     mk_map("nv", "<leader>bh", function () copy_buf("h") end , "Delete buffer"),
     mk_map("nv", "<leader>bl", function () copy_buf("l") end , "Delete buffer"),
 
@@ -227,9 +237,9 @@ M.keys = {
     mk_map("n", "<leader>cd", function() vim.diagnostic.open_float({ source = true, border = 'rounded' }) end, "Show diagnostics"),
     mk_map("n", "<leader>cD", function() vim.diagnostic.open_float({ source = true, severity = { min = vim.diagnostic.severity.HINT }, border = 'rounded' }) end, "Show diagnostics"),
     mk_map("n", "<leader>ce", function() vim.cmd.RustLsp('explainError') end, "Explain error", "lsp-rust"),
-    mk_map("n", "<leader>cf", "<cmd>Telescope lsp_document_symbols<cr>", "Search document symbols", "lsp"),
+    mk_map("n", "<leader>cf", function() Snacks.picker.lsp_symbols() end, "Search document symbols", "lsp"),
     mk_map("n", "<leader>ch", "<cmd>TroubleToggle lsp_references<cr>", "List references", "trouble"),
-    mk_map("n", "<leader>ci", function() vim.cmd.RustLsp('renderDiagnostic') end, "Rendered error", "lsp-rust"),
+    mk_map("n", "<leader>ci", function() vim.cmd.RustLsp('renderDiagnostic', 'current') end, "Rendered error", "lsp-rust"),
     mk_map("n", "<leader>cj", "<cmd>TroubleToggle lsp_definitions<cr>", "List definitions", "trouble"),
     mk_map("n", "<leader>ck", "<cmd>TroubleToggle lsp_type_definitions<cr>", "List type definitionsni", "trouble"),
     mk_map("n", "<leader>cme", "<cmd>RustLsp expandMacro <cr>", "Code action", "lsp-rust"),
@@ -243,7 +253,7 @@ M.keys = {
     mk_map("n", "<leader>co", ":Neotree document_symbols<cr>", "Source outline", "neo-tree"),
     mk_map("n", "<leader>cq", function() vim.cmd.RustLsp('hover', 'actions') end, "Explain error", "lsp-rust"),
     mk_map("n", "<leader>cr", vim.lsp.buf.rename, "Rename", "lsp"),
-    mk_map("n", "<leader>cs", "<cmd>Telescope lsp_dynamic_workspace_symbols<cr>", "Search symbols", "lsp"),
+    mk_map("n", "<leader>cs", function () Snacks.picker.lsp_workspace_symbols() end, "Search symbols", "lsp"),
     mk_map("n", "<leader>cu", function() vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled()) end, "Toogle inlay", "lsp-rust"),
     mk_map("n", "<leader>cx", "<cmd>Trouble diagnostics toggle filter.buf=0<cr>", "Document diagnostics", "trouble"),
     mk_map("n", "<leader>cX", "<cmd>Trouble diagnostics toggle<cr>", "Workspace diagnostics", "trouble"),
@@ -262,18 +272,16 @@ M.keys = {
     mk_map("n", "<leader>dt", function() require("dap").terminate() end, "Continue", "dap"),
 
     -- Section: <leader>f
-    mk_map({ "n", "v" }, "<leader>fb", ":Telescope buffers<cr>", "Find buffer", "telescope"),
+    mk_map({ "n", "v" }, "<leader>fb", function () Snacks.picker.buffers() end, "Find buffer", "snacks"),
     mk_map({ "n", "v" }, "<leader>fe", ":Neotree toggle<cr>", "Explorer", "neo-tree"),
-    mk_map({ "n", "v" }, "<leader>ff", ":Telescope find_files<cr>", "Find file", "telescope"),
-    mk_map({ "n", "v" }, "<leader>fF", ":Telescope oldfiles<cr>", "Previous files", "telescope"),
+    mk_map({ "n", "v" }, "<leader>ff", function () Snacks.picker.files() end, "Find file", "snacks"),
     mk_map({ "n", "v" }, "<leader>fq", ":Explore<cr>", "Explorer (built-in)"),
     mk_map({ "n", "v" }, "<leader>fr", ":Neotree reveal<cr>", "Reveal current", "neo-tree"),
-    mk_map({ "n", "v" }, "<leader>fw", ":Telescope jumplist<cr>", "Jump list", "telescope"),
+    mk_map({ "n", "v" }, "<leader>fw", function () Snacks.picker.jumps() end, "Jump list", "snacks"),
 
     -- Section: <leader>g
     mk_map("n", "<leader>ga", function() require("ext/git").gitsigns_actions() end, "Git actions", "gitsigns"),
     mk_map("nv", "<leader>gb", "<cmd>Gitsigns toggle_current_line_blame<cr>", "Toggle line blame", "gitsigns"),
-    -- mk_map("nv", "<leader>gB", function() require("gitsigns").blame_line() end, "See line blame", "gitsigns"),
     mk_map("nv", "<leader>gg", function() require("ext/git").toggle_extended_info() end, "Toggle details"),
     mk_map("nv", "<leader>gc", function() require("gitsigns").setloclist() end, "See local hunks", "gitsigns"),
     mk_map("nv", "<leader>gC", function() require("gitsigns").setqflist("all") end, "See all hunks", "gitsigns"),
@@ -288,16 +296,23 @@ M.keys = {
 
     -- Section: <leader>m
     mk_map("nv", "<leader>dw", "", "Toggle diff white space"),
-    mk_map({ "n", "v" }, "<leader>mh", ":Telescope help_tags<cr>", "Search help tags", "telescope"),
-    mk_map({ "n", "v" }, "<leader>ml", "<cmd>Lazy<cr>", "Plugin mgmt"),
-    mk_map("v", "<leader>mr", run_lua_from_visual, "Run selected lua"),
+    mk_map("nv", "<leader>mh", function () Snacks.picker.help() end, "Search help tags", "snacks"),
+    mk_map("nv", "<leader>ml", "<cmd>Lazy<cr>", "Plugin mgmt"),
+    mk_map("nv", "<leader>mm", function () Snacks.notifier.show_history() end, "Search help tags", "snacks"),
+    -- mk_map("nv", "<leader>mp", require("ext/qol").yank_location, "Yank current location into '+'"),
+    mk_map("n", "<leader>mpc", function() Snacks.profiler.scratch() end, "Profiler scratch buffer"),
+    mk_map("n", "<leader>mpp", function() Snacks.profiler.toggle() end, "Toggle profiler"),
+    mk_map("n", "<leader>mph", function() Snacks.profiler.highlight() end, "Toggle profiler hightlights"),
+    mk_map("n", "<leader>mpr", function() Snacks.profiler.pick() end, "Open profiling results"),
+    -- mk_map("n", "<leader>mpq", function() Snacks.profiler.toggle.profiler_highlights() end, "Toggle profiler hightlights"),
     mk_map("nv", "<leader>mq", "<cmd>qa<cr>", "Exit"),
-    mk_map("nv", "<leader>mp", require("ext/qol").yank_location, "Yank current location into '+'"),
+    mk_map("v", "<leader>mr", run_lua_from_visual, "Run selected lua"),
+    mk_map("nv", "<leader>ms", function() Snacks.picker() end, "Show all pickers", "snacks"),
 
     -- Section: <leader>s
-    mk_map({ "n", "v" }, "<leader>sf", ":Telescope current_buffer_fuzzy_find<cr>", "Search here", "telescope"),
-    mk_map({ "n", "v" }, "<leader>ss", ":Telescope live_grep<cr>", "Search in files", "telescope"),
-    mk_map({ "n", "v" }, "<leader>sv", ":Telescope grep_string<cr>", "Search current term", "telescope"),
+    mk_map({ "n", "v" }, "<leader>sb", function () Snacks.picker.grep_buffers() end, "Search in buffers", "snacks"),
+    mk_map({ "n", "v" }, "<leader>ss", function () Snacks.picker.grep() end, "Search in files", "snacks"),
+    mk_map({ "n", "v" }, "<leader>sw", function () Snacks.picker.grep_word() end, "Search current term", "snacks"),
 
     -- Resize window
     mk_map("n", "<C-Up>", "<cmd>resize +2<cr>", { desc = "Increase window height" }),

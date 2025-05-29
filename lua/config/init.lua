@@ -51,12 +51,41 @@ function M.setup(opts)
   vim.opt.softtabstop = 2
   vim.opt.shiftwidth = 2
 
+  -- Debug helper
+  _G.dd = function(...)
+    Snacks.debug.inspect(...)
+  end
+  _G.bt = function()
+    Snacks.debug.backtrace()
+  end
+  vim.print = _G.dd
+
+  -- HL yanked text
+  vim.api.nvim_create_autocmd("TextYankPost", {
+    callback = function(_)
+      vim.hl.on_yank({
+        timeout = 350,
+        higroup = "@comment.warning"
+      })
+    end,
+  })
+
+  vim.api.nvim_create_autocmd("BufEnter", {
+    -- pattern = "*",
+    callback = function()
+      -- Config non modifiable bufs
+      if not vim.bo.modifiable then
+        vim.wo.colorcolumn = ""
+      end
+    end,
+  })
 
   vim.keymap.set({"n","v","i","o"}, "<C-i>", "<C-i>")
   -- vim.keymap.set({"n","v","i","o"}, "<Tab>", "<Tab>")
   vim.keymap.set({"n"}, "<Tab>", "<Tab>", { desc = "Fixed tab" })
   require('config.map_fixes').config_netrw_explorer()
   -- require('config.map_fixes').clear_remaps()
+
 
   -- Icons
   vim.fn.sign_define("DiagnosticSignError",
@@ -71,7 +100,8 @@ function M.setup(opts)
   -- Diagnostics
 
   vim.diagnostic.config({
-    severity_sort = true
+    severity_sort = true,
+    virtual_text = true,
   })
 
 
@@ -98,6 +128,12 @@ function M.setup(opts)
       vim.cmd("redrawstatus")
     end,
   })
+
+  vim.api.nvim_create_user_command(
+    "Q",
+    "<cmd>q",
+  { nargs = 0 }
+  )
 
   vim.api.nvim_create_user_command(
     "CheckMap",

@@ -3,8 +3,7 @@ local util = require('util')
 
 return {
   -- Handle vim.ui.select and vim.ui.input
-  {
-    'stevearc/dressing.nvim',
+  { 'stevearc/dressing.nvim',
     opts = {
       select = {
         builtin = {
@@ -16,8 +15,8 @@ return {
     },
   },
   -- Key helper
-  {
-    "folke/which-key.nvim",
+  { "folke/which-key.nvim",
+    -- enabled = false,
     event = "VeryLazy",
     init = function()
       -- vim.o.timeout = true
@@ -25,7 +24,8 @@ return {
     end,
     opts = {
       triggers = {
-        { "<auto>", mode = "nixsotc" },
+        -- { "<auto>", mode = "nixsotc" },
+        { "<leader>", mode = { "n", "v" } }
       },
     },
     config = function (_, opts)
@@ -34,26 +34,15 @@ return {
       wk.add(config.mapping.groups)
     end
   },
-
--- Disabled till I will want to figure out how to make it work with ehich-key, if ever.
---
---  {
---     'mrjones2014/legendary.nvim',
---     -- sqlite is only needed if you want to use frecency sorting
---     -- dependencies = { 'kkharji/sqlite.lua' }
---     priority = config.plugin_priorities.legendary,
---     lazy = false,
---     opts = { 
---       lazy_nvim = { auto_register = true },
---       which_key = { auto_register = true },
---     },
---     config = function (_, opts)
---       require('legendary').setup(opts)
---       
---     end
---  },
-  {
-    "catppuccin/nvim",
+  { "ziontee113/icon-picker.nvim",
+    opts = { disable_legacy_commands = true },
+    event = 'VeryLazy',
+    keys = util.map(
+      config.mapping.get_filtered('icons'),
+      util.key_canon_to_lazy
+    ),
+  },
+  { "catppuccin/nvim",
     name = "catppuccin",
     priority = 10000,
     opts = {
@@ -68,13 +57,12 @@ return {
       vim.cmd([[colorscheme catppuccin]])
     end
   },
-  {
-    "ziontee113/icon-picker.nvim",
-    opts = { disable_legacy_commands = true },
-    event = 'VeryLazy',
-    keys = util.map(
-      config.mapping.get_filtered('icons'),
-      util.key_canon_to_lazy
-    ),
+  { "webhooked/kanso.nvim",
+    lazy = false,
+    priority = 10000,
+    -- config = function (_, opts)
+    --   require('kanso').setup(opts)
+    --   vim.cmd([[colorscheme kanso]])
+    -- end
   }
 }

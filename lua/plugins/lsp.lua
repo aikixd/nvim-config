@@ -1,10 +1,11 @@
+local util = require('util')
+local config = require('config')
+
 return {
-  {
-    "williamboman/mason.nvim",
+  { "williamboman/mason.nvim",
     opts = { }
   },
-  {
-    "williamboman/mason-lspconfig.nvim",
+  { "williamboman/mason-lspconfig.nvim",
     opts = {
       ensure_installed = { "lua_ls", "rust_analyzer" },
       automatic_enable = {
@@ -14,23 +15,25 @@ return {
       }
     }
   },
-
-  {
-    "neovim/nvim-lspconfig",
-    -- event = { "BufReadPre", "BufNewFile" },
+  { "neovim/nvim-lspconfig",
     dependencies = {
       "mason.nvim",
       "mason-lspconfig.nvim",
       "hrsh7th/cmp-nvim-lsp"
     },
   },
-
+  { "folke/trouble.nvim",
+    dependencies = { "nvim-tree/nvim-web-devicons" },
+    keys = util.map(
+      config.mapping.get_filtered('trouble'),
+      util.key_canon_to_lazy
+    ),
+    opts = { },
+  },
   -- Rust
-  {
-    'mrcjkb/rustaceanvim',
-    -- version = '^3', -- Recommended
+  { 'mrcjkb/rustaceanvim',
     ft = { 'rust' },
-    -- event = 'VeryLazy',
+    enabled = true,
     lazy = false,
     dependencies = {
       "nvim-dap"
@@ -38,10 +41,8 @@ return {
     config = function () 
       require('util').dbg("setting rustaceanvim")
 
-      -- local lldb = require('mason-registry').get_package('codelldb')
-      -- dd(lldb)
+      -- Init debug adapter
       local install_path = vim.fn.expand("$MASON/packages/codelldb")
-      -- local install_path = lldb:get_install_path()
       local codelldb_path = install_path .. '/extension/adapter/codelldb'
       local liblldb_path = install_path .. '/extension/lldb/lib/liblldb.so'
 
@@ -89,10 +90,8 @@ return {
       }
     end
   },
-
   -- Haskell
-  {
-    'mrcjkb/haskell-tools.nvim',
+  { 'mrcjkb/haskell-tools.nvim',
     version = '^4', -- Recommended
     lazy = false, -- This plugin is already lazy
   }

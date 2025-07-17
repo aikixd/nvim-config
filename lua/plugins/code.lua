@@ -1,13 +1,11 @@
 return {
-  {
-    "L3MON4D3/LuaSnip",
+  { "L3MON4D3/LuaSnip",
     -- follow latest release.
     version = "2.*", -- Replace <CurrentMajor> by the latest released major (first number of latest release)
     -- install jsregexp (optional!).
     build = "make install_jsregexp"
   },
-  {
-    'hrsh7th/nvim-cmp',
+  { 'hrsh7th/nvim-cmp',
     version = false,
     event = 'InsertEnter',
 
@@ -101,6 +99,7 @@ return {
             return vim_item
           end
         },
+        
         mapping = cmp.mapping.preset.insert({
           ['<C-Space>'] = cmp.mapping.complete(),
           ['<C-e>'] = cmp.mapping.abort(),
@@ -152,12 +151,24 @@ return {
           max_view_entries = 1000
         }
       }
+    end,
+    config = function (_, opts)
+      local cmp = require('cmp')
+
+      cmp.setup(opts)
+
+      cmp.event:on("menu_opened", function()
+        vim.b.copilot_suggestion_hidden = true
+      end)
+
+      cmp.event:on("menu_closed", function()
+        vim.b.copilot_suggestion_hidden = false
+      end)
     end
   },
 
   -- Highlights
-  {
-    "RRethy/vim-illuminate",
+  { "RRethy/vim-illuminate",
     opts = {
       providers = {
         'lsp',
@@ -171,17 +182,16 @@ return {
       local plugin = require('illuminate')
       plugin.configure(opts)
 
-      vim.api.nvim_create_autocmd("FileType", {
-        callback = function()
-          local buffer = vim.api.nvim_get_current_buf()
-          vim.keymap.set("n", "]]", function() plugin.goto_next_reference(false) end, { buffer = buffer, desc = "Next occurence" })
-          vim.keymap.set("n", "[[", function() plugin.goto_prev_reference(false) end, { buffer = buffer, desc = "Prev occurence" })
-        end,
-      })
+      -- vim.api.nvim_create_autocmd("FileType", {
+      --   callback = function()
+      --     local buffer = vim.api.nvim_get_current_buf()
+      --     vim.keymap.set("n", "]]", function() plugin.goto_next_reference(false) end, { buffer = buffer, desc = "Next occurence" })
+      --     vim.keymap.set("n", "[[", function() plugin.goto_prev_reference(false) end, { buffer = buffer, desc = "Prev occurence" })
+      --   end,
+      -- })
     end,
   },
-  {
-    "nvim-treesitter/nvim-treesitter",
+  { "nvim-treesitter/nvim-treesitter",
     -- enabled = false,
     version = false, -- last release is way too old and doesn't work on Windows
     build = ":TSUpdate",
@@ -193,17 +203,22 @@ return {
       local configs = require("nvim-treesitter.configs")
 
       configs.setup({
-          ensure_installed = { "lua", "vim", "vimdoc", "rust" },
-          sync_install = false,
-          highlight = { enable = true },
-          indent = { enable = true },
-          refactor = {
-            highlight_definitions = {
-              enable = false,
-              clear_on_cursor_move = false,
-            }
+        ensure_installed = { "lua", "vim", "vimdoc", "rust" },
+        ignore_install = { "javascript" },
+        auto_install = true,
+        sync_install = false,
+        highlight = {
+          enable = true ,
+          additional_vim_regex_highlighting = false,
+        },
+        indent = { enable = true },
+        refactor = {
+          highlight_definitions = {
+            enable = false,
+            clear_on_cursor_move = false,
           }
-        })
+        },
+      })
     end
   }
 }

@@ -2,6 +2,28 @@ local util = require('util')
 local config = require('config')
 
 return {
+  { "folke/snacks.nvim",
+    priority = 1000,
+    lazy = false,
+    opts = {
+      debug = {
+        enabled = true
+      },
+      notifier = {
+        enabled = true
+      },
+      picker = {
+        enabled = true
+      },
+      profiler = {
+        enabled = true
+      }
+    },
+    keys = util.map(
+      config.mapping.get_filtered('snacks'),
+      util.key_canon_to_lazy
+    ),
+  },
   { 'nvim-telescope/telescope.nvim',
     branch = '0.1.x',
     dependencies = { 'nvim-lua/plenary.nvim' },
@@ -103,29 +125,6 @@ return {
         }
       })
     end
-  },
-  {
-    "folke/snacks.nvim",
-    priority = 1000,
-    lazy = false,
-    opts = {
-      debug = {
-        enabled = true
-      },
-      notifier = {
-        enabled = true
-      },
-      picker = {
-        enabled = true
-      },
-      profiler = {
-        enabled = true
-      }
-    },
-    keys = util.map(
-      config.mapping.get_filtered('snacks'),
-      util.key_canon_to_lazy
-    ),
   },
   { "lukas-reineke/indent-blankline.nvim",
     main = "ibl",

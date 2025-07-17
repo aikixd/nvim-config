@@ -34,6 +34,7 @@ return {
       wk.add(config.mapping.groups)
     end
   },
+  -- An icon picker
   { "ziontee113/icon-picker.nvim",
     opts = { disable_legacy_commands = true },
     event = 'VeryLazy',
@@ -42,6 +43,7 @@ return {
       util.key_canon_to_lazy
     ),
   },
+  -- A theme
   { "catppuccin/nvim",
     name = "catppuccin",
     priority = 10000,
@@ -57,6 +59,7 @@ return {
       vim.cmd([[colorscheme catppuccin]])
     end
   },
+  -- A theme
   { "webhooked/kanso.nvim",
     lazy = false,
     priority = 10000,

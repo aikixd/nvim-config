@@ -1,6 +1,7 @@
 local M = {}
 
 local qol = require("ext/qol")
+local lsp_config = require("ext.lsp.config")
 
 M.list_clients = function (opts)
   local clients = vim.lsp.get_clients()
@@ -42,6 +43,24 @@ M.progress_handle_take = function(key)
   local r = progress_handlers[key]
   progress_handlers[key] = nil
   return r
+end
+
+M.lsp_actions = function ()
+  lsp_config.client_do(function (client) 
+    dd(client.name)
+    if client.name == "rust-analyzer" then
+      vim.ui.select(
+        {
+          { ix = 0, text = "Change target arch" }
+        },
+        { format_item = function (x) return x.text end },
+        function (selected)
+          require("ext.lsp.config").set_target_arch()
+        end
+      )
+    end
+  end)
+
 end
 
 return M

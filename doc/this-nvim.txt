@@ -7,7 +7,7 @@ Text ~
   `'wrap'` breaks at any char by default. `'linebreak'` makes it break on
   chars defined by `'brakeat'`. Contains blank chars by default.
 
-Notable options                                          *this-nvim-options* ~
+Notable options                                            *this-nvim-options* ~
 
 Options doc |options|
 
@@ -16,16 +16,26 @@ Options doc |options|
 
  - |textwidth|,|tw|: Limit for auto text breaking; 0 to disable; local.
 
-Search & replace ~
+Search & replace                                            *this-nvim-search* ~
 
-  Find in files
+  Open quick/location lists: `':cw'`, `':copen'`, `':lw'`, `':lopen'`
+
+  Find in files ~
 
   `':vimgrep' /{pattern}/[g][j][f] {path *}`
+  Sends matches to quickfix by default.
     - `g`: same as in `:s`.
     - `j`: do not jump to the first match.
     - `f`: fuzzy search.
 
-  Open quick/location lists: `':cw'`, `':copen'`, `':lw'`, `':lopen'`
+
+  Grep via quick/location lists ~
+
+  `':[l]grep' {flags} {pattern} {files}`
+  Sends matches to:
+    - `:grep`  → quickfix list
+    - `:lgrep` → location list
+    Example: `:grep -C2 TODO %`
 
 Map ~
 

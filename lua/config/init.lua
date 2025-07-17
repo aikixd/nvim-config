@@ -101,9 +101,18 @@ function M.setup(opts)
 
   vim.diagnostic.config({
     severity_sort = true,
-    virtual_text = true,
+    virtual_text = {
+      source = "if_many"
+    },
+    float = {
+      source = true
+    }
   })
 
+  vim.notify("Blocking Rust ftplugin.", vim.log.levels.INFO)
+  vim.g.loaded_rust          = 1  -- disable $VIMRUNTIME/syntax/rust.vim
+  vim.g.loaded_rust_plugin   = 1  -- disable $VIMRUNTIME/plugin/rust.vim
+  vim.g.loaded_rust_ftplugin = 1  -- disable $VIMRUNTIME/ftplugin/rust.vim
 
   vim.cmd("helptags ALL")
 
@@ -125,15 +134,29 @@ function M.setup(opts)
   vim.api.nvim_create_autocmd("DiagnosticChanged", {
     callback = function()
       -- Force a redraw of the status lines in all windows
-      vim.cmd("redrawstatus")
+      -- Schedule for the next ui cycle to prevent races in treesitter
+      vim.schedule(function ()
+        vim.cmd("redrawstatus")
+      end)
     end,
   })
 
-  vim.api.nvim_create_user_command(
-    "Q",
-    "<cmd>q",
-  { nargs = 0 }
-  )
+vim.api.nvim_create_autocmd("User", {
+  pattern = "copilot.suggestion",
+  callback = function()
+    vim.print("Copilot suggestion triggered")
+  end,
+})
+
+  -- Alias :Q -> :q
+  vim.api.nvim_create_user_command("Q", function ()
+    vim.cmd("q")
+  end, { force = true })
+
+  -- Alias :Vs -> :vs
+  vim.api.nvim_create_user_command("Vs", function ()
+    vim.cmd("vs")
+  end, { force = true })
 
   vim.api.nvim_create_user_command(
     "CheckMap",

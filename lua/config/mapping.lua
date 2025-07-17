@@ -1,6 +1,15 @@
 local qol = require('ext/qol')
 local M = {}
 
+local function tab_action()
+  local copilot = require('copilot.suggestion')
+  if copilot.is_visible() then
+    copilot.accept()
+  else
+    vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<Tab>", true, false, true), "n", true)
+  end
+end
+
 local function mk_map(mode, lhs, rhs, opts, ctx)
   if type(opts) == "string" then opts = { desc = opts, noremap = true } end
 
@@ -53,52 +62,6 @@ local run_lua_from_visual = function ()
   loadstring(text)()
 end
 
-local copy_buf = function (dir)
-
-  local buf_this = vim.api.nvim_get_current_buf()
-  -- local win_this = vim.api.nvim_get_current_win()
-  -- local buf_other = vim.fn.getbufinfo(vim.fn.expand('#'))
-  local _, line, col = unpack(vim.fn.getpos("."))
-
-  vim.cmd("wincmd " .. dir) -- Move in the desired direction
-
-  -- vim.print(vim.api.nvim_buf_get_option(0, "filetype"))
-
-  local win_tgt = vim.api.nvim_get_current_win()
-  if
-    win_this == win_tgt
-    or 'neo-tree' == vim.api.nvim_buf_get_option(0, "filetype")
-  then return end
-
-  vim.api.nvim_win_set_buf(win_tgt,  buf_this)
-  -- vim.api.nvim_win_set_buf(win_this, buf_other[1].bufnr)
-  vim.fn.setpos(".", { 0, line, col, 0 })
-
-end
-
-local move_buf = function (dir)
-
-  local buf_this = vim.api.nvim_get_current_buf()
-  local win_this = vim.api.nvim_get_current_win()
-  local buf_other = vim.fn.getbufinfo(vim.fn.expand('#'))
-  local _, line, col = unpack(vim.fn.getpos("."))
-
-  vim.cmd("wincmd " .. dir) -- Move in the desired direction
-
-  -- vim.print(vim.api.nvim_buf_get_option(0, "filetype"))
-
-  local win_tgt = vim.api.nvim_get_current_win()
-  if
-    win_this == win_tgt
-    or 'neo-tree' == vim.api.nvim_buf_get_option(0, "filetype")
-  then return end
-
-  vim.api.nvim_win_set_buf(win_tgt,  buf_this)
-  vim.api.nvim_win_set_buf(win_this, buf_other[1].bufnr)
-  vim.fn.setpos(".", { 0, line, col, 0 })
-
-end
-
 local switch_buf_last = function ()
   local bufnr = vim.fn.bufnr('#')
   if bufnr == -1 then return end
@@ -149,20 +112,20 @@ M.keys = {
     mk_map("v", "<C-\\>", function () require("which-key").show() end, "Which key"),
     mk_map("i", "<C-\\>", function () require("which-key").show() end, "Which key"),
     mk_map("s", "<C-\\>", function () require("which-key").show() end, "Which key"),
-    mk_map("nv", "<M-h>", function () move_buf("h") end , "Move buffer left"),
-    mk_map("nv", "<M-l>", function () move_buf("l") end , "Move buffer right"),
+    mk_map("nv", "<M-h>", function () qol.move_buf("h") end , "Move buffer left"),
+    mk_map("nv", "<M-l>", function () qol.move_buf("l") end , "Move buffer right"),
+
     mk_map("v", "<", "<gv", "Indent more"),
     mk_map("v", ">", ">gv", "Indent less"),
+
     mk_map("nv", "<M-,>", "<C-o>", "Back"),
     mk_map("nv", "<M-.>", "<C-i>", "Forward"),
-    mk_map("vi", "<C-s>", "<cmd>w<cr>", "Write buffer"),
     mk_map("n", "<C-i>", "<cmd>IconPickerNormal<cr>", "Insert symbol", "icons"),
     mk_map("i", "<C-i>", "<cmd>IconPickerInsert<cr>", "Insert symbol", "icons"),
-    mk_map("ni", "<C-q>", function () vim.lsp.buf.signature_help() end, "Signature help", 'lsp'),
+    -- mk_map("vi", "<C-s>", "<cmd>w<cr>", "Write buffer"),
     mk_map("niv", "<C-s>", "<cmd>w<cr><esc>", "Write buffer"),
-    -- mk_map("nvio", "<C-w>", "<cmd>q<cr>", "Close window"),
-    mk_map("nvi", "<C-z>", "u", "Undo"),
-    mk_map("nv",  "<S-z>", "<C-r>", "Redo"),
+    mk_map("nv", "<C-z>", "u",     "Undo"),
+    mk_map("nv", "<S-z>", "<C-r>", "Redo"),
 
     mk_map("i", "<M-[>", "[]<left>");
     mk_map("i", "<M-]>", "[<cr>]<esc><S-o>");
@@ -178,21 +141,26 @@ M.keys = {
     mk_map("nv", "[e", function () vim.diagnostic.goto_prev({ severity = vim.diagnostic.severity.ERROR }) end, "Next error"),
     mk_map("nv", "[g", function () require('gitsigns').prev_hunk() end, "Previous git hunk", "gitsigns"),
     mk_map("nv", "]g", function () require('gitsigns').next_hunk() end, "Next git hunk", "gitsigns"),
+    mk_map("n", "]]", function () require('illuminate').goto_next_reference(false) end, "Next occurence"),
+    mk_map("n", "[[", function () require('illuminate').goto_prev_reference(false) end, "Prev occurence"),
 
     -- Section: hjkl
     mk_map("ni", "<C-l>", "<esc><C-w><C-l>", "To right window"),
     mk_map("ni", "<C-h>", "<esc><C-w><C-h>", "To left window"),
     mk_map("ni", "<C-j>", "<esc><C-w><C-j>", "To lower window"),
     mk_map("ni", "<C-k>", "<esc><C-w><C-k>", "To upper window"),
+    -- Nav/scroll
     mk_map("nvi", "<A-u>", "<C-y>", "Scroll up"),
     mk_map("nvi", "<A-m>", "<C-e>", "Scroll down"),
-
-
-    mk_map("nv",  "0", "col('.') == 1 ? '^' : '0'", { desc = "Home", expr = true }),
     mk_map("nx", "u", "<C-u>", "Scroll up"),
     mk_map("nx", "m", "<C-d>", "Scroll down"),
+
+    mk_map("nv", "0", "col('.') == 1 ? '^' : '0'", { desc = "Home", expr = true }),
+
+    -- Signature help
     mk_map("n", "q", hover_action, "Symbol info", 'lsp'),
     mk_map("v", "q", function() vim.cmd.RustLsp { 'hover', 'range' } end, "Code action", "lsp-rust"),
+    mk_map("ni", "<C-q>", function () vim.lsp.buf.signature_help() end, "Signature help", 'lsp'),
 
     -- Move Lines
     mk_map("n", "<A-j>", "<cmd>m .+1<cr>==", { desc = "Move down" }),
@@ -227,8 +195,8 @@ M.keys = {
     mk_map("nv", "<leader>bb", switch_buf_last, "Other buffer"),
     mk_map("nv", "<leader>bd", "<cmd>bn | bd #<cr>", "Delete buffer"),
     mk_map("nv", "<leader>bf", function () Snacks.picker.buffers() end, "Find buffer", "snacks"),
-    mk_map("nv", "<leader>bh", function () copy_buf("h") end , "Delete buffer"),
-    mk_map("nv", "<leader>bl", function () copy_buf("l") end , "Delete buffer"),
+    mk_map("nv", "<leader>bh", function () qol.show_buf("h") end , "Show in window to the left"),
+    mk_map("nv", "<leader>bl", function () qol.show_buf("l") end , "Show in window to the right"),
 
     -- Section: <leader>c
     mk_map("n", "<leader>ca", function() vim.lsp.buf.code_action() end, "Code action", "lsp"),
@@ -249,6 +217,7 @@ M.keys = {
     mk_map("nv", "<leader>cmrc", require('ext/lang').rust.toggle_captures, "Toggle closure captures display"),
     mk_map("nv", "<leader>cmre", require('ext/lang').rust.toggle_expression_adjustments, "Toggle expression adjustments display"),
     mk_map("nv", "<leader>cmrr", require('ext/lang').rust.toggle_drops, "Toggle implicit drops display"),
+    mk_map("n", "<leader>cml", require('ext/lsp').lsp_actions, "LSP actions"),
     mk_map("n", "<leader>cn", function () require('dropbar.api').pick() end, "Bread-crumbs"),
     mk_map("n", "<leader>co", ":Neotree document_symbols<cr>", "Source outline", "neo-tree"),
     mk_map("n", "<leader>cq", function() vim.cmd.RustLsp('hover', 'actions') end, "Explain error", "lsp-rust"),
@@ -289,17 +258,16 @@ M.keys = {
     mk_map("nv", "<leader>gD", "<cmd>DiffviewOpen<cr>", "Diff all", "diffview"),
     mk_map("n", "<leader>gf", function() require("gitsigns").stage_buffer() end, "Stage buffer", "gitsigns"),
     mk_map("n", "<leader>gF", function() require("gitsigns").reset_buffer_index() end, "Reset buffer", "gitsigns"),
-    mk_map("nv", "<leader>gh", "<cmd>DiffviewFileHistory %<cr>", "Diff HEAD history", "diffview"),
+    mk_map("n", "<leader>gh", "<cmd>DiffviewFileHistory %<cr>", "Diff HEAD history", "diffview"),
     mk_map("n", "<leader>gH", "<cmd>DiffviewFileHistory<cr>", "Diff HEAD history", "diffview"),
     mk_map("n", "<leader>gs", function() require("gitsigns").stage_hunk() end, "Stage hunk", "gitsigns"),
-    mk_map("v", "<leader>gs", function() require("gitsigns").stage_hunk(qol.get_selection_line_range()) end, "Stage hunk", "gitsigns"),
+    mk_map("v", "<leader>gs", function() require("gitsigns").stage_hunk(qol.get_visual_line_range()) end, "Stage hunk", "gitsigns"),
 
     -- Section: <leader>m
     mk_map("nv", "<leader>dw", "", "Toggle diff white space"),
     mk_map("nv", "<leader>mh", function () Snacks.picker.help() end, "Search help tags", "snacks"),
     mk_map("nv", "<leader>ml", "<cmd>Lazy<cr>", "Plugin mgmt"),
     mk_map("nv", "<leader>mm", function () Snacks.notifier.show_history() end, "Search help tags", "snacks"),
-    -- mk_map("nv", "<leader>mp", require("ext/qol").yank_location, "Yank current location into '+'"),
     mk_map("n", "<leader>mpc", function() Snacks.profiler.scratch() end, "Profiler scratch buffer"),
     mk_map("n", "<leader>mpp", function() Snacks.profiler.toggle() end, "Toggle profiler"),
     mk_map("n", "<leader>mph", function() Snacks.profiler.highlight() end, "Toggle profiler hightlights"),
@@ -308,6 +276,7 @@ M.keys = {
     mk_map("nv", "<leader>mq", "<cmd>qa<cr>", "Exit"),
     mk_map("v", "<leader>mr", run_lua_from_visual, "Run selected lua"),
     mk_map("nv", "<leader>ms", function() Snacks.picker() end, "Show all pickers", "snacks"),
+    mk_map("n", "<leader>mz", "<cmd>sus<cr>", "Suspend"),
 
     -- Section: <leader>s
     mk_map({ "n", "v" }, "<leader>sb", function () Snacks.picker.grep_buffers() end, "Search in buffers", "snacks"),

@@ -158,4 +158,46 @@ function M.print_buf(obj)
   vim.api.nvim_buf_set_lines(0, 0, -1, false, vim.split(long_string, '\n'))
 end
 
+-- ---------------------------------------------------------------------------
+-- internal: make a scratch buffer and return its handle
+-- ---------------------------------------------------------------------------
+local function new_scratch(name)
+  vim.cmd("enew")                             -- :enew = new empty buffer
+  local buf = vim.api.nvim_get_current_buf()
+  vim.api.nvim_buf_set_name(buf, name or "")  -- give it a nice title
+  vim.bo.buftype   = "nofile"                 -- don't touch the filesystem
+  vim.bo.bufhidden = "wipe"                   -- discard on close
+  vim.bo.swapfile  = false                    -- no swapfile
+  return buf
+end
+
+-- ---------------------------------------------------------------------------
+-- 1.  Show every autocommand (+ declaration location) in a new buffer
+-- ---------------------------------------------------------------------------
+function M.show_autocmds()
+  -- `verbose autocmd` already includes the defining script & line number
+  local output = vim.fn.execute("verbose autocmd")
+  local lines  = vim.split(output, "\n", { plain = true })
+  local buf    = new_scratch("[Autocmds]")
+  vim.api.nvim_buf_set_lines(buf, 0, -1, false, lines)
+end
+
+-- ---------------------------------------------------------------------------
+-- 2.  Show every active job / channel in a new buffer
+-- ---------------------------------------------------------------------------
+function M.show_channels()
+  local lines = { "id  mode    pid   argv" }
+  for _, ch in ipairs(vim.api.nvim_list_chans()) do
+    local info = vim.api.nvim_get_chan_info(ch.id)
+    -- stringify argv if present (jobs; nil for RPC clients without argv)
+    local argv = info.argv and table.concat(info.argv, " ") or ""
+    table.insert(
+      lines,
+      string.format("%3d %-7s %-5s %s", info.id, info.mode, info.pid or "-", argv)
+    )
+  end
+  local buf = new_scratch("[Channels]")
+  vim.api.nvim_buf_set_lines(buf, 0, -1, false, lines)
+end
+
 return M

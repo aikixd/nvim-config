@@ -1,0 +1,25 @@
+{
+  "mcpServers": {
+    "fetch": {
+      "args": [
+        "run",
+        "-i",
+        "--rm",
+        "mcp/fetch"
+      ],
+      "command": "docker"
+    },
+    "memory": {
+      "args": [
+        "run",
+        "-i",
+        "-v",
+        "claude-memory:/app/dist",
+        "--rm",
+        "mcp/memory"
+      ],
+      "command": "docker",
+      "disabled": true
+    }
+  }
+}

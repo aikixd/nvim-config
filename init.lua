@@ -11,6 +11,7 @@ if not vim.loop.fs_stat(lazypath) then
 end
 vim.opt.rtp:prepend(lazypath)
 
+
 local cfg = require("config")
 local util = require("util")
 
@@ -41,6 +42,7 @@ if util.debugging then
   })
 end
 
+cfg.set_keys()
 
 require("lazy").setup({
   spec = {
@@ -56,4 +58,3 @@ require("lazy").setup({
 
 require('config.lsp').setup({})
 
-cfg.set_keys()

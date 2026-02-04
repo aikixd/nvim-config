@@ -3,10 +3,12 @@ local M = {}
 M.server_settings = {
   -- Env for cargo
   extraEnv = { },
-  capabilities = require("cmp_nvim_lsp").default_capabilities(),
+  -- capabilities = require("cmp_nvim_lsp").default_capabilities(),
+  capabilities = vim.lsp.protocol.make_client_capabilities(),
   cargo = {
     -- allTargets = true, -- default
     -- features = "all"
+    -- allTargets = false, -- Hide the test crate unfound issue when working on targets that don't have tests lib.
   },
   cfg = {
     setTest = true

@@ -35,8 +35,8 @@ end
 
 local progress_handlers = {}
 
-M.progress_handle_insert = function(key, handle)
-  progress_handlers[key] = handle
+M.progress_handle_insert = function(key, handle, metadata)
+  progress_handlers[key] = { handle = handle, metadata = metadata }
 end
 
 M.progress_handle_take = function(key)

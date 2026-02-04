@@ -19,7 +19,7 @@ return {
     dependencies = {
       "mason.nvim",
       "mason-lspconfig.nvim",
-      "hrsh7th/cmp-nvim-lsp"
+      -- "hrsh7th/cmp-nvim-lsp"
     },
   },
   { "folke/trouble.nvim",

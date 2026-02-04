@@ -13,7 +13,10 @@ return {
         enabled = true
       },
       picker = {
-        enabled = true
+        enabled = true,
+        matcher = {
+          history_bonus = true
+        }
       },
       profiler = {
         enabled = true
@@ -67,7 +70,11 @@ return {
     event = "VeryLazy",
     config = function(_, _)
       require('mini.indentscope').setup({
-        symbol = '│'
+        symbol = '│',
+        -- draw = { animation = require("mini.indentscope").gen_animation.none() },
+        options = {
+          n_lines = 70
+        }
       })
 
       require('mini.ai').setup()
@@ -158,14 +165,18 @@ return {
 
             lspu.progress_handle_insert(args.data.request_id, handle)
           elseif args.data.request.type == "error" then
-            local handle = lspu.progress_handle_take(args.data.request_id)
-            if handle == nil then return end
+            local prog = lspu.progress_handle_take(args.data.request_id)
+            if prog == nil then return end
+
+            local handle = prog.handle
             handle.message = handle.message .. " "
             handle:finish()
           else
-            local handle = lspu.progress_handle_take(args.data.request_id)
-            if handle == nil then return end
-            handle.message = handle.message .. " "
+            local prog = lspu.progress_handle_take(args.data.request_id)
+            if prog == nil then return end
+
+            local handle = prog.handle
+            handle.message = handle.message .. " ✔"
             handle:finish()
           end
 
@@ -187,6 +198,7 @@ return {
         util.key_canon_to_lazy
       ),
     opts = {
+      async_directory_scan = "always",
       default_component_configs = {
         indent = {
           with_expanders = true,
@@ -194,6 +206,20 @@ return {
           expander_expanded = "",
           expander_highlight = "NeoTreeExpander",
         },
+      },
+      document_symbols = {
+        window = {
+          mappings = {
+            ["l"] = {
+              "toggle_node",
+              desc = "Toggle node",
+            },
+            ["h"] = {
+              "close_node",
+              desc = "Close node",
+            }
+          },
+        }
       },
       window = {
         mappings = {
@@ -220,9 +246,13 @@ return {
             desc = "Toggle preview"
           },
           ["l"] = {
-            "focus_preview",
-            desc = "Focus preview"
+            "toggle_node",
+            desc = "Toggle node",
           },
+          -- ["l"] = {
+          --   "focus_preview",
+          --   desc = "Focus preview"
+          -- },
           ["S"] = {
             "open_split",
             desc = "Open in new h-split"
@@ -232,11 +262,11 @@ return {
             "open_vsplit",
             desc = "Open in new v-split"
           },
-          ["g"] = {
-            "open",
-            nowait = true,
-            desc = "Open",
-          },
+          -- ["g"] = {
+          --   "open",
+          --   nowait = true,
+          --   desc = "Open",
+          -- },
           -- ["s"] = "vsplit_with_window_picker",
           ["t"] = {
             "open_tabnew",
@@ -345,6 +375,7 @@ return {
     --end,
   },
   { 'lewis6991/gitsigns.nvim',
+    enabled = false,
     opts = {
       signs_staged_enable = true,
       current_line_blame_opts = {
@@ -383,9 +414,21 @@ return {
   { 'Bekaboo/dropbar.nvim',
     opts = {
       bar = {
+        enable = function (bufnr, winnr, info)
+          if vim.bo[bufnr].filetype == 'neo-tree' then
+            return false
+          end
+
+          if vim.bo[bufnr].buftype ~= 'nofile' then
+            return false
+          end
+
+          return require('dropbar.configs').opts.bar.enable(bufnr, winnr, info)
+        end,
         pick = {
           pivots = 'asdfjkl;ghrtyuvbnm'
-        }
+        },
+        update_debounce = 220,
       },
       menu = {
         -- keymaps = {
@@ -408,7 +451,28 @@ return {
         --   end
         -- }
       }
-    }
+    },
+    config = function (_, opts)
+      local p = require('dropbar')
+      local c = require('dropbar.configs')
+
+      local default_enable = c.opts.bar.enable
+      local enable = function (bufnr, winnr, info)
+          if vim.bo[bufnr].filetype == 'neo-tree' then
+            return false
+          end
+
+          if vim.bo[bufnr].buftype ~= 'nofile' then
+            return false
+          end
+
+          return default_enable(bufnr, winnr, info)
+        end
+
+      opts.bar.enable = enable
+
+      p.setup(opts)
+    end,
     -- optional, but required for fuzzy finder support
     -- dependencies = {
     --   'nvim-telescope/telescope-fzf-native.nvim'
@@ -422,5 +486,39 @@ return {
         config.mapping.get_filtered('flash'),
         util.key_canon_to_lazy
       ),
+  },
+  {
+    dir = "/home/aikixd/Dev/playground/flameline.nvim",
+    -- enabled = false,
+    name = "flameline",
+    config = function()
+      require("flameline").setup({
+        colors = {
+          hot = "#ecc067",
+        },
+        debug = true,
+        heat = {
+          edit = 0.3,
+          move = 0.3,
+          dwell = 0.5,
+          spurious_move_factor = 0.1, -- Multiplier for lazy/spurious moves
+          propagation_falloff = false, -- If true, heat reduces linearly with distance from center
+        },
+        models = {
+          growth = require('flameline.core').create_logistic_profile(4, 0.5),
+          decay = require('flameline.core').create_retention_profile(4, 0.5)
+        },
+        normalization = {
+          enabled = true
+        },
+        radius = {
+          edit = 6,
+          move = 3,
+          dwell = 6,
+        },
+      })
+    end,
+    -- Ensure it loads for relevant files
+    event = { "BufReadPost", "BufNewFile" },
   }
 }

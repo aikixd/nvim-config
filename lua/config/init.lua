@@ -8,6 +8,8 @@ M.mapping = require('config.mapping')
 
 
 function M.setup(opts)
+  require('config.perf').config_profile_nvim()
+
   vim.g.mapleader = " "
   vim.g.maplocalleader = " "
 
@@ -58,7 +60,7 @@ function M.setup(opts)
   _G.bt = function()
     Snacks.debug.backtrace()
   end
-  vim.print = _G.dd
+  -- vim.print = _G.dd
 
   -- HL yanked text
   vim.api.nvim_create_autocmd("TextYankPost", {
@@ -72,6 +74,7 @@ function M.setup(opts)
 
   vim.api.nvim_create_autocmd("BufEnter", {
     -- pattern = "*",
+    desc = "Per buffer config",
     callback = function()
       -- Config non modifiable bufs
       if not vim.bo.modifiable then
@@ -82,7 +85,7 @@ function M.setup(opts)
 
   vim.keymap.set({"n","v","i","o"}, "<C-i>", "<C-i>")
   -- vim.keymap.set({"n","v","i","o"}, "<Tab>", "<Tab>")
-  vim.keymap.set({"n"}, "<Tab>", "<Tab>", { desc = "Fixed tab" })
+  vim.keymap.set({"n","v","i","o"}, "<Tab>", "<Tab>", { desc = "Fixed tab" })
   require('config.map_fixes').config_netrw_explorer()
   -- require('config.map_fixes').clear_remaps()
 
@@ -109,10 +112,10 @@ function M.setup(opts)
     }
   })
 
-  vim.notify("Blocking Rust ftplugin.", vim.log.levels.INFO)
-  vim.g.loaded_rust          = 1  -- disable $VIMRUNTIME/syntax/rust.vim
-  vim.g.loaded_rust_plugin   = 1  -- disable $VIMRUNTIME/plugin/rust.vim
-  vim.g.loaded_rust_ftplugin = 1  -- disable $VIMRUNTIME/ftplugin/rust.vim
+  -- vim.notify("Blocking Rust ftplugin.", vim.log.levels.INFO)
+  -- vim.g.loaded_rust          = 1  -- disable $VIMRUNTIME/syntax/rust.vim
+  -- vim.g.loaded_rust_plugin   = 1  -- disable $VIMRUNTIME/plugin/rust.vim
+  -- vim.g.loaded_rust_ftplugin = 1  -- disable $VIMRUNTIME/ftplugin/rust.vim
 
   vim.cmd("helptags ALL")
 
@@ -141,12 +144,12 @@ function M.setup(opts)
     end,
   })
 
-vim.api.nvim_create_autocmd("User", {
-  pattern = "copilot.suggestion",
-  callback = function()
-    vim.print("Copilot suggestion triggered")
-  end,
-})
+  vim.api.nvim_create_autocmd("User", {
+    pattern = "copilot.suggestion",
+    callback = function()
+      vim.print("Copilot suggestion triggered")
+    end,
+  })
 
   -- Alias :Q -> :q
   vim.api.nvim_create_user_command("Q", function ()
@@ -182,6 +185,8 @@ vim.api.nvim_create_autocmd("User", {
       complete = "function"
     }
   )
+
+  require('config.perf').config_nvim()
 end
 
 function M.set_keys()

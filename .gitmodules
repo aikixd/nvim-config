@@ -1,0 +1,3 @@
+[submodule "lua/external/profile.nvim"]
+	path = lua/external/profile.nvim
+	url = git@github.com:stevearc/profile.nvim.git

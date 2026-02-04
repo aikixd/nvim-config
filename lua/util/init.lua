@@ -1,5 +1,6 @@
 local M = {
-  debugging = false
+  debugging = false,
+  fs = require('util.fs')
 }
 
 
@@ -16,6 +17,22 @@ local display_highlight_groups = function ()
     else
       return get_ts_link(link:match("^(@.-)%.[^%.]*$"))
     end
+  end
+
+  -- Returns "file:line" where the highlight group was last set, or nil
+  local set_from_cache = {}
+  local function get_last_set_from(name)
+    local cached = set_from_cache[name]
+    if cached ~= nil then return cached end
+
+    local ok, out = pcall(vim.fn.execute, 'silent verbose hi ' .. name)
+    if not ok or type(out) ~= 'string' then
+      set_from_cache[name] = nil
+      return nil
+    end
+    local src = out:match('Last set from%s+([^\n]+)')
+    set_from_cache[name] = src
+    return src
   end
 
   local create_tree = function ()
@@ -67,7 +84,8 @@ local display_highlight_groups = function ()
     for name, deats in vim.spairs(hl.children) do
       local s = string.format("%s%s -> %s", indent, name, deats.link)
       local line = {
-        formatted = s,
+        base = s,
+        set_src = get_last_set_from(name),
         hl_g = name,
         hl_s = level * indent_str,
         hl_e = (level * indent_str) + #name
@@ -89,17 +107,8 @@ local display_highlight_groups = function ()
     local fg = deats.fg and string.format("#%x", deats.fg) or "       "
     local bg = deats.bg and string.format("#%x", deats.bg) or ""
 
-    local s = string.format(
-      "%-" .. max_length .."s fg: %s bg: %s",
-      name, fg, bg
-    )
-
-    local line = {
-      formatted = s,
-      hl_g = name,
-      hl_s = 0,
-      hl_e = #name
-    }
+    local base = string.format("%-" .. max_length .."s fg: %s bg: %s", name, fg, bg)
+    local line = { base = base, set_src = get_last_set_from(name), hl_g = name, hl_s = 0, hl_e = #name }
 
     table.insert(lines, line)
 
@@ -108,9 +117,18 @@ local display_highlight_groups = function ()
     ::continue::
   end
 
+  -- Align the trailing "| set:" column by padding base to the maximum width
+  local max_base = 0
+  for _, line_info in ipairs(lines) do
+    if line_info.base and #line_info.base > max_base then max_base = #line_info.base end
+  end
+
   local formatted_lines = {}
   for _, line_info in ipairs(lines) do
-    table.insert(formatted_lines, line_info.formatted)
+    local base = line_info.base or line_info.formatted or ""
+    local pad = string.rep(" ", math.max(1, max_base - #base + 1))
+    local suffix = line_info.set_src and ("| set: " .. line_info.set_src) or ""
+    table.insert(formatted_lines, base .. pad .. suffix)
   end
 
   local buf = vim.api.nvim_create_buf(false, true)
@@ -119,7 +137,7 @@ local display_highlight_groups = function ()
   local ns = vim.api.nvim_create_namespace("")
 
   for i, line_info in ipairs(lines) do
-    vim.hl.range(buf, ns, line_info.hl_g, {i-1, line_info.hl_s}, {i-1, line_info.hl_e})
+    vim.hl.range(buf, ns, line_info.hl_g, { i - 1, line_info.hl_s }, { i - 1, line_info.hl_e })
   end
 
   vim.api.nvim_set_current_buf(buf)
@@ -158,10 +176,26 @@ function M.print_buf(obj)
   vim.api.nvim_buf_set_lines(0, 0, -1, false, vim.split(long_string, '\n'))
 end
 
+function M.get_user_bufs()
+    local bufs = {}
+    for _, b in ipairs(vim.api.nvim_list_bufs()) do
+      if vim.api.nvim_buf_is_loaded(b) and vim.fn.buflisted(b) == 1 then
+        local name = vim.api.nvim_buf_get_name(b)
+        if name ~= "" then
+          local ft = (vim.api.nvim_buf_get_option(b, "filetype") or "")
+          local base = vim.fn.fnamemodify(name, ":.")
+            table.insert(bufs, base .. (ft ~= "" and (" (" .. ft .. ")") or ""))
+        end
+      end
+    end
+    table.sort(bufs)
+    return table.concat(bufs, ", ")
+end
+
 -- ---------------------------------------------------------------------------
 -- internal: make a scratch buffer and return its handle
 -- ---------------------------------------------------------------------------
-local function new_scratch(name)
+function M.new_scratch(name)
   vim.cmd("enew")                             -- :enew = new empty buffer
   local buf = vim.api.nvim_get_current_buf()
   vim.api.nvim_buf_set_name(buf, name or "")  -- give it a nice title
@@ -174,11 +208,16 @@ end
 -- ---------------------------------------------------------------------------
 -- 1.  Show every autocommand (+ declaration location) in a new buffer
 -- ---------------------------------------------------------------------------
-function M.show_autocmds()
+function M.show_autocmds(event)
   -- `verbose autocmd` already includes the defining script & line number
-  local output = vim.fn.execute("verbose autocmd")
+  local output
+  if event == nil then
+    output = vim.fn.execute("verbose autocmd")
+  else
+    output = vim.fn.execute("verbose autocmd "..event)
+  end
   local lines  = vim.split(output, "\n", { plain = true })
-  local buf    = new_scratch("[Autocmds]")
+  local buf    = M.new_scratch("[Autocmds]")
   vim.api.nvim_buf_set_lines(buf, 0, -1, false, lines)
 end
 
@@ -196,7 +235,7 @@ function M.show_channels()
       string.format("%3d %-7s %-5s %s", info.id, info.mode, info.pid or "-", argv)
     )
   end
-  local buf = new_scratch("[Channels]")
+  local buf = M.new_scratch("[Channels]")
   vim.api.nvim_buf_set_lines(buf, 0, -1, false, lines)
 end
 

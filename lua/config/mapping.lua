@@ -2,12 +2,25 @@ local qol = require('ext/qol')
 local M = {}
 
 local function tab_action()
-  local copilot = require('copilot.suggestion')
-  if copilot.is_visible() then
-    copilot.accept()
-  else
-    vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<Tab>", true, false, true), "n", true)
+  local blink = require('blink.cmp')
+  -- local copilot = require('copilot.suggestion')
+  local ok, copilot = pcall(require, "copilot.suggestion")
+  if ok == false then
+    copilot = nil
   end
+
+  if blink.is_visible() then
+    blink.accept()
+    return
+  end
+
+  if copilot and copilot.is_visible() then
+    copilot.accept()
+    return
+  end
+
+  vim.api.nvim_feedkeys(
+    vim.api.nvim_replace_termcodes("<Tab>", true, false, true), "n", true)
 end
 
 local function mk_map(mode, lhs, rhs, opts, ctx)
@@ -101,6 +114,12 @@ local hover_action = function ()
   end
 end
 
+function toggle_diag_virt_text()
+  local current = vim.diagnostic.config().virtual_text
+  -- If it's a table (custom settings) treat that as "on"
+  if current == nil then current = true end
+  vim.diagnostic.config({ virtual_text = not current })
+end
 
 
 M.keys = {
@@ -115,13 +134,15 @@ M.keys = {
     mk_map("nv", "<M-h>", function () qol.move_buf("h") end , "Move buffer left"),
     mk_map("nv", "<M-l>", function () qol.move_buf("l") end , "Move buffer right"),
 
+    mk_map("i", "<Tab>", tab_action, "Smart tab"),
+
     mk_map("v", "<", "<gv", "Indent more"),
     mk_map("v", ">", ">gv", "Indent less"),
 
     mk_map("nv", "<M-,>", "<C-o>", "Back"),
     mk_map("nv", "<M-.>", "<C-i>", "Forward"),
     mk_map("n", "<C-i>", "<cmd>IconPickerNormal<cr>", "Insert symbol", "icons"),
-    mk_map("i", "<C-i>", "<cmd>IconPickerInsert<cr>", "Insert symbol", "icons"),
+    -- mk_map("i", "<C-i>", "<cmd>IconPickerInsert<cr>", "Insert symbol", "icons"),
     -- mk_map("vi", "<C-s>", "<cmd>w<cr>", "Write buffer"),
     mk_map("niv", "<C-s>", "<cmd>w<cr><esc>", "Write buffer"),
     mk_map("nv", "<C-z>", "u",     "Undo"),
@@ -141,8 +162,10 @@ M.keys = {
     mk_map("nv", "[e", function () vim.diagnostic.goto_prev({ severity = vim.diagnostic.severity.ERROR }) end, "Next error"),
     mk_map("nv", "[g", function () require('gitsigns').prev_hunk() end, "Previous git hunk", "gitsigns"),
     mk_map("nv", "]g", function () require('gitsigns').next_hunk() end, "Next git hunk", "gitsigns"),
-    mk_map("n", "]]", function () require('illuminate').goto_next_reference(false) end, "Next occurence"),
-    mk_map("n", "[[", function () require('illuminate').goto_prev_reference(false) end, "Prev occurence"),
+    -- If we set the map globally, it would be overriden by an ft plugin. So
+    -- we're hacking here, to allow the plugin to register it at later time.
+    mk_map("n", "]]", function () --[[ dummy --]] end, "Next occurence", "illuminate"),
+    mk_map("n", "[[", function () --[[ dummy --]] end, "Prev occurence", "illuminate"),
 
     -- Section: hjkl
     mk_map("ni", "<C-l>", "<esc><C-w><C-l>", "To right window"),
@@ -191,6 +214,10 @@ M.keys = {
     mk_map("nvo", "w", "b", "Previous word"),
     mk_map("nvo", "W", "B", "Previous WORD"),
 
+    -- Section: <leader>a
+    mk_map("nv", "<leader>aa", ":CodeCompanionActions<cr>", "CodeCompanion actions", "code-companion"),
+    mk_map("nv", "<leader>ac", ":CodeCompanionChat Toggle<cr>", "CodeCompanion actions", "code-companion"),
+
     -- Section: <leader>b
     mk_map("nv", "<leader>bb", switch_buf_last, "Other buffer"),
     mk_map("nv", "<leader>bd", "<cmd>bn | bd #<cr>", "Delete buffer"),
@@ -218,6 +245,7 @@ M.keys = {
     mk_map("nv", "<leader>cmre", require('ext/lang').rust.toggle_expression_adjustments, "Toggle expression adjustments display"),
     mk_map("nv", "<leader>cmrr", require('ext/lang').rust.toggle_drops, "Toggle implicit drops display"),
     mk_map("n", "<leader>cml", require('ext/lsp').lsp_actions, "LSP actions"),
+    mk_map("n", "<leader>cmv", toggle_diag_virt_text, "Toggle diagnostics VT"),
     mk_map("n", "<leader>cn", function () require('dropbar.api').pick() end, "Bread-crumbs"),
     mk_map("n", "<leader>co", ":Neotree document_symbols<cr>", "Source outline", "neo-tree"),
     mk_map("n", "<leader>cq", function() vim.cmd.RustLsp('hover', 'actions') end, "Explain error", "lsp-rust"),
@@ -234,7 +262,7 @@ M.keys = {
     mk_map("n", "<leader>dd", function() require("dap").step_over() end, "Step over", "dap"),
     mk_map("n", "<leader>df", function() require("dap").step_into() end, "Step into", "dap"),
     mk_map("n", "<leader>dg", function() require("dap").step_out() end, "Step out", "dap"),
-    mk_map("n", "<leader>dr", function() require("dap").restart() end, "Pause", "dap"),
+    mk_map("n", "<leader>dr", function() require("dap").restart() end, "Restart", "dap"),
     mk_map("n", "<leader>ds", function() require("dap").pause() end, "Pause", "dap"),
     mk_map("n", "<leader>du", function() require("dapui").toggle() end, "Toggle debug ui", "dap-ui"),
     mk_map("n", "<leader>dv", function() require("dap").toggle_breakpoint() end, "Toggle breakpoint", "dap"),
@@ -246,6 +274,7 @@ M.keys = {
     mk_map({ "n", "v" }, "<leader>ff", function () Snacks.picker.files() end, "Find file", "snacks"),
     mk_map({ "n", "v" }, "<leader>fq", ":Explore<cr>", "Explorer (built-in)"),
     mk_map({ "n", "v" }, "<leader>fr", ":Neotree reveal<cr>", "Reveal current", "neo-tree"),
+    mk_map({ "n", "v" }, "<leader>fs", function () Snacks.picker.smart() end, "Smart finder", "snacks"),
     mk_map({ "n", "v" }, "<leader>fw", function () Snacks.picker.jumps() end, "Jump list", "snacks"),
 
     -- Section: <leader>g

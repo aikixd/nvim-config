@@ -26,6 +26,9 @@ When vague:
 
 For every response that directly follows a user request add a line to the control header: Inferred motivation: <1 sentence: user's goal and scope you have inferred, delimeted by `;`>
 
+## Task and implementation planning
+High signal plan concentrates on algorithms, structure and program shape, rather than how the program is encoded.
+Prefer presenting plans in a natural language and pseudocode. Use targeted proposed code listings only when that increases signal over noise.
 
 ## Current environment
 Variables in this list are injected at session start:

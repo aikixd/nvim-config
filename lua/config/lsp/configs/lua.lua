@@ -23,7 +23,7 @@ M.lspconfig = {
         },
       })
 
-      client.notify("workspace/didChangeConfiguration", { settings = client.config.settings })
+      client:notify("workspace/didChangeConfiguration", { settings = client.config.settings })
     end
     return true
   end,

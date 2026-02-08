@@ -3,40 +3,74 @@ local config = require('config')
 
 -- Require approval when a tool attempts to read files outside the current working directory
 -- Used by: read_file, neovim__read_file, neovim__read_multiple_files
-local function path_outside_cwd_approval(tool, tools)
-  _G.dd(tool)
-  _G.dd(tools)
-
+local function path_outside_cwd_approval(tool, _tools)
+  -- Resolve and normalize CWD
   local cwd = vim.loop.cwd() or vim.fn.getcwd()
   local cwd_real = vim.loop.fs_realpath(cwd) or cwd
+  cwd_real = vim.fs.normalize(cwd_real)
 
   local function normalize(p)
     if not p or p == '' then return nil end
-    local expanded = vim.fn.expand(p)
+    local expanded = vim.fn.expand(p) -- expands ~, env vars, etc.
     local abs = expanded
     if not expanded:match('^/') then
       abs = (cwd_real .. '/' .. expanded)
     end
-    local real = vim.loop.fs_realpath(abs) or vim.fs.normalize(abs)
-    return real
+    -- Prefer realpath to resolve symlinks; fall back to normalized absolute path
+    local real = vim.loop.fs_realpath(abs) or abs
+    return vim.fs.normalize(real)
   end
 
-  local function is_outside(p)
-    local real = normalize(p)
-    if not real then return false end
+  local function is_outside_real(real)
+    -- Ensure trailing slash for prefix match correctness (avoid prefix collisions)
     local prefix = cwd_real
     if prefix:sub(-1) ~= '/' then prefix = prefix .. '/' end
-    return not vim.startswith(real, prefix)
+    -- Allow both exact cwd and any path under it
+    return not (real == cwd_real or vim.startswith(real, prefix))
   end
 
-  local args = tool.args or {}
-  if type(args.paths) == 'table' then
-    for _, p in ipairs(args.paths) do
-      if is_outside(p) then return true end
-    end
-    return false
+  local function extract_paths(name, args)
+    local extractors = {
+      read_file = function(a) return { a.filepath } end,
+      ["neovim__read_file"] = function(a) return { a.path } end,
+      ["neovim__list_directory"] = function(a) return { a.path } end,
+      insert_edit_into_file = function(a) return { a.filepath } end,
+      create_file = function(a) return { a.filepath } end,
+    }
+    local ex = extractors[name]
+    if ex then return ex(args) end
+    if type(args.paths) == 'table' then return args.paths end
+    return { args.filepath or args.path }
   end
-  return is_outside(args.filepath or args.path)
+
+  local tool_name = tool.name or "<unknown>"
+  local args = tool.args or {}
+  local raw_paths = extract_paths(tool_name, args)
+
+  local resolved_paths, require_approval = {}, false
+  for _, p in ipairs(raw_paths) do
+    local real = normalize(p)
+    -- Treat empty path for directory listing as the CWD
+    if (tool_name == "neovim__list_directory") and (not p or p == "") then
+      real = cwd_real
+    end
+    table.insert(resolved_paths, real) -- keep nils for notification
+    if not real or is_outside_real(real) then
+      require_approval = true
+      break
+    end
+  end
+
+  -- Notify decision (1-liner, includes tool, resolved path(s), and decision)
+  local icon = require_approval and "🔒" or "✅"
+  local decision = require_approval and "ask" or "allow"
+  local level = require_approval and vim.log.levels.WARN or vim.log.levels.INFO
+  local display_paths = {}
+  for i, rp in ipairs(resolved_paths) do display_paths[i] = rp or "nil" end
+  local msg = string.format("%s %s → %s | %s", icon, tool_name, table.concat(display_paths, ", "), decision)
+  vim.notify(msg, level)
+
+  return require_approval
 end
 
 return {
@@ -283,6 +317,8 @@ return {
             local cc_config = require("codecompanion.config")
 
             if chat then
+              -- _G.dd(cc_config.interactions.chat.tools)
+              vim.notify("Adding codecompanion perception tool group", vim.log.levels.INFO)
               chat.tool_registry:add_group("perception", cc_config.interactions.chat.tools)
             else
               vim.notify("codecompanion chat is empty", vim.log.levels.WARN)
@@ -309,7 +345,30 @@ return {
     build = "npm install -g mcp-hub@latest",  -- Installs `mcp-hub` node binary globally
     config = function()
       require("mcphub").setup({
-        config = vim.fn.stdpath('config') .. '/mcphub/servers.json'
+        config = vim.fn.stdpath('config') .. '/mcphub/servers.json',
+        auto_approve = function(params)
+          -- Only handle tool calls
+          if params.action ~= "use_mcp_tool" or not params.tool_name then
+            return false -- show confirmation
+          end
+
+          -- Delegate neovim file/dir reads to path-based approval
+          if params.server_name == "neovim" and (
+             params.tool_name == "read_file" or
+             params.tool_name == "list_directory" or
+             params.tool_name == "read_multiple_files"
+          ) then
+            local fake_tool = {
+              name = params.tool_name,
+              args = params.arguments or {},
+            }
+            local requires = path_outside_cwd_approval(fake_tool, nil)
+            return not requires -- auto-approve when within cwd
+          end
+
+          -- Default: require approval
+          return false
+        end,
       })
     end
   },

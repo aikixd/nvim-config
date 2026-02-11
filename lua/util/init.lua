@@ -239,4 +239,16 @@ function M.show_channels()
   vim.api.nvim_buf_set_lines(buf, 0, -1, false, lines)
 end
 
+-- ---------------------------------------------------------------------------
+-- Copy the current file path and line number to the system clipboard
+-- ---------------------------------------------------------------------------
+function M.copy_current_location_to_plus()
+  local path = vim.api.nvim_buf_get_name(0)
+  if path == "" then
+    path = vim.fn.expand('%:p')
+  end
+  local ln = vim.fn.line('.')
+  vim.fn.setreg('+', ("%s:%d"):format(path, ln))
+end
+
 return M

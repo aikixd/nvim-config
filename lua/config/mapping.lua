@@ -306,6 +306,7 @@ M.keys = {
     mk_map("v", "<leader>mr", run_lua_from_visual, "Run selected lua"),
     mk_map("nv", "<leader>ms", function() Snacks.picker() end, "Show all pickers", "snacks"),
     mk_map("n", "<leader>mz", "<cmd>sus<cr>", "Suspend"),
+    mk_map("n", "<leader>m+", function () require("util").copy_current_location_to_plus() end, "Current location to clipboard"),
 
     -- Section: <leader>s
     mk_map({ "n", "v" }, "<leader>sb", function () Snacks.picker.grep_buffers() end, "Search in buffers", "snacks"),

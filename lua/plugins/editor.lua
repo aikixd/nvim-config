@@ -505,8 +505,8 @@ return {
           propagation_falloff = false, -- If true, heat reduces linearly with distance from center
         },
         models = {
-          growth = require('flameline.core').create_logistic_profile(4, 0.5),
-          decay = require('flameline.core').create_retention_profile(4, 0.5)
+          growth = require('flameline.core').create_logistic_profile(5, 0.5),
+          decay = require('flameline.core').create_retention_profile(5, 0.5)
         },
         normalization = {
           enabled = true

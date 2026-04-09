@@ -230,7 +230,7 @@ return {
           },
           opts = {
             system_prompt = function (opts)
-              local filepath = vim.fn.stdpath('config') .. '/lua/config/ai/prompts/gpt-5.2.md'
+              local filepath = vim.fn.stdpath('config') .. '/lua/config/ai/prompts/gpt5.3-codex.md'
 
               local file = io.open(filepath, "r")
               if not file then

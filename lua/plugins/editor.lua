@@ -488,6 +488,14 @@ return {
       ),
   },
   {
+    "hasansujon786/super-kanban.nvim",
+    dependencies = {
+      "folke/snacks.nvim",           -- [required]
+      "nvim-orgmode/orgmode",        -- [optional] Org format support
+    },
+    opts = {}, -- optional: pass your config table here
+  },
+  {
     dir = "/home/aikixd/Dev/playground/flameline.nvim",
     -- enabled = false,
     name = "flameline",
@@ -496,7 +504,7 @@ return {
         colors = {
           hot = "#ecc067",
         },
-        debug = true,
+        debug = false,
         heat = {
           edit = 0.3,
           move = 0.3,

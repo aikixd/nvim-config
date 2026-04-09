@@ -304,9 +304,10 @@ M.keys = {
     -- mk_map("n", "<leader>mpq", function() Snacks.profiler.toggle.profiler_highlights() end, "Toggle profiler hightlights"),
     mk_map("nv", "<leader>mq", "<cmd>qa<cr>", "Exit"),
     mk_map("v", "<leader>mr", run_lua_from_visual, "Run selected lua"),
-    mk_map("nv", "<leader>ms", function() Snacks.picker() end, "Show all pickers", "snacks"),
+    mk_map("nv", "<leader>ms", function () Snacks.picker() end, "Show all pickers", "snacks"),
     mk_map("n", "<leader>mz", "<cmd>sus<cr>", "Suspend"),
     mk_map("n", "<leader>m+", function () require("util").copy_current_location_to_plus() end, "Current location to clipboard"),
+    mk_map("v", "<leader>m+", function () require("util").copy_visual_selection_with_location_to_plus() end, "Selection and location to clipboard"),
 
     -- Section: <leader>s
     mk_map({ "n", "v" }, "<leader>sb", function () Snacks.picker.grep_buffers() end, "Search in buffers", "snacks"),

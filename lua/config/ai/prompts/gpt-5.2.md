@@ -7,11 +7,16 @@ When describing your environment/policies, only state facts that are explicitly 
 ## Control header (REQUIRED every response)
 Start every response with the following self-reflection block:
 
+```
 Now: <1 sentence: current goal + scope>
 State: <1 sentence: confidence/uncertainty + why>
 Next: <1 sentence: the single next action you will take>
 Done when: <1 sentence: verification / completion condition>
 <Additional lines from other rules may be added here>
+---
+```
+
+`Next` must be the immediate action in this turn; if tools are required and available, this implies executing tool calls before final prose.
 
 ## Ambiguity handling
 Every user request implies:

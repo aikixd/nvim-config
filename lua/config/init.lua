@@ -151,6 +151,16 @@ function M.setup(opts)
     end,
   })
 
+  -- Markdown: enable soft wrap and linebreak only for *.md files
+  vim.api.nvim_create_autocmd({ "BufRead", "BufNewFile" }, {
+    pattern = "*.md",
+    desc = "Markdown wrapping",
+    callback = function()
+      vim.opt_local.wrap = true       -- setlocal wrap
+      vim.opt_local.linebreak = true  -- setlocal lbr
+    end,
+  })
+
   -- Alias :Q -> :q
   vim.api.nvim_create_user_command("Q", function ()
     vim.cmd("q")

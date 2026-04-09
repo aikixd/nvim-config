@@ -251,4 +251,33 @@ function M.copy_current_location_to_plus()
   vim.fn.setreg('+', ("%s:%d"):format(path, ln))
 end
 
+
+function M.copy_visual_selection_with_location_to_plus()
+  -- Exit the visual mode to update the markers
+  vim.api.nvim_feedkeys('\027', 'xt', false)
+
+  -- Visual selection start/end positions
+  local _, ls, cs = unpack(vim.fn.getpos("'<"))
+  local _, le, ce = unpack(vim.fn.getpos("'>"))
+
+  -- Resolve buffer path like copy_current_location_to_plus()
+  local path = vim.api.nvim_buf_get_name(0)
+  if path == "" then
+    path = vim.fn.expand('%:p')
+  end
+
+  -- Trim end column in case of linewise selection
+  local le_len = #vim.fn.getline(le)
+  if ce > le_len then ce = le_len end
+
+  -- Collect selected text
+  local text = vim.api.nvim_buf_get_text(0, ls - 1, cs - 1, le - 1, ce, {})
+  text = table.concat(text, "\n")
+
+  -- Build payload and yank to system clipboard (+)
+  local location = ("%s:%d"):format(path, ls)
+  local payload = ("%s :\n\n```\n%s\n```"):format(location, text)
+  vim.fn.setreg('+', payload)
+end
+
 return M

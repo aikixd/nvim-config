@@ -16,6 +16,7 @@ function M.setup(opts)
   vim.opt.background = "dark"
   vim.opt.cmdheight = 0
   vim.opt.colorcolumn = "100"
+  vim.opt.textwidth = 100
   vim.opt.confirm = true
   vim.opt.cursorlineopt = "both"
   vim.opt.cursorline = true
@@ -52,6 +53,55 @@ function M.setup(opts)
   vim.opt.tabstop = 2
   vim.opt.softtabstop = 2
   vim.opt.shiftwidth = 2
+
+  -- Experimantal UI
+  local ui2_conf = {
+    enable = true,
+    msg = {
+      targets = {
+        [""] = "msg",
+        empty = "cmd",
+        bufwrite = "msg",
+        confirm = "cmd",
+        emsg = "pager",
+        echo = "msg",
+        echomsg = "msg",
+        echoerr = "pager",
+        completion = "cmd",
+        list_cmd = "pager",
+        lua_error = "pager",
+        lua_print = "msg",
+        progress = "pager",
+        rpc_error = "pager",
+        quickfix = "msg",
+        search_cmd = "cmd",
+        search_count = "cmd",
+        shell_cmd = "pager",
+        shell_err = "pager",
+        shell_out = "pager",
+        shell_ret = "msg",
+        undo = "msg",
+        verbose = "pager",
+        wildlist = "cmd",
+        wmsg = "msg",
+        typed_cmd = "cmd",
+      },
+      cmd = {
+        height = 0.5,
+      },
+      dialog = {
+        height = 0.5,
+      },
+      msg = {
+        height = 0.3,
+        timeout = 5000,
+      },
+      pager = {
+        height = 0.5,
+      },
+    },
+  }
+  require('vim._core.ui2').enable(ui2_conf)
 
   -- Debug helper
   _G.dd = function(...)
@@ -109,8 +159,19 @@ function M.setup(opts)
     },
     float = {
       source = true
-    }
+    },
+    signs = {
+      text = {
+        [vim.diagnostic.severity.ERROR] = '',
+        [vim.diagnostic.severity.WARN]  = '',
+        [vim.diagnostic.severity.INFO]  = '',
+        [vim.diagnostic.severity.HINT]  = '󰌵',
+      },
+    },
   })
+
+  vim.lsp.codelens.enable(true)
+  vim.lsp.on_type_formatting.enable()
 
   -- vim.notify("Blocking Rust ftplugin.", vim.log.levels.INFO)
   -- vim.g.loaded_rust          = 1  -- disable $VIMRUNTIME/syntax/rust.vim
@@ -151,15 +212,17 @@ function M.setup(opts)
     end,
   })
 
-  -- Markdown: enable soft wrap and linebreak only for *.md files
-  vim.api.nvim_create_autocmd({ "BufRead", "BufNewFile" }, {
-    pattern = "*.md",
-    desc = "Markdown wrapping",
-    callback = function()
-      vim.opt_local.wrap = true       -- setlocal wrap
-      vim.opt_local.linebreak = true  -- setlocal lbr
-    end,
-  })
+  if false then
+    -- Markdown: enable soft wrap and linebreak only for *.md files
+    vim.api.nvim_create_autocmd({ "BufRead", "BufNewFile" }, {
+      pattern = "*.md",
+      desc = "Markdown wrapping",
+      callback = function()
+        vim.opt_local.wrap = true       -- setlocal wrap
+        vim.opt_local.linebreak = true  -- setlocal lbr
+      end,
+    })
+  end
 
   -- Alias :Q -> :q
   vim.api.nvim_create_user_command("Q", function ()

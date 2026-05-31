@@ -16,7 +16,17 @@ return {
         enabled = true,
         matcher = {
           history_bonus = true
-        }
+        },
+        win = {
+          input = {
+            keys = {
+              ["u"] = { "preview_scroll_up", mode = {  "n" } },
+              ["m"] = { "preview_scroll_down", mode = {  "n" } },
+              ["<C-u>"] = { "preview_scroll_up", mode = {  "i", "n" } },
+              ["<C-m>"] = { "preview_scroll_down", mode = {  "i", "n" } },
+            }
+          }
+        },
       },
       profiler = {
         enabled = true
@@ -65,7 +75,7 @@ return {
       "nvim-telescope/telescope.nvim"
     },
   },
-  { 'echasnovski/mini.nvim',
+  { 'nvim-mini/mini.nvim',
     version = false,
     event = "VeryLazy",
     config = function(_, _)
@@ -133,6 +143,82 @@ return {
       })
     end
   },
+  { "OXY2DEV/markview.nvim",
+    enabled = false,
+    lazy = false,
+    priority = 900,
+    dependencies = {
+      "nvim-treesitter/nvim-treesitter",
+      "nvim-tree/nvim-web-devicons",
+    },
+    keys = util.map(
+      config.mapping.get_filtered('markview'),
+      util.key_canon_to_lazy
+    ),
+    opts = function()
+      local presets = require("markview.presets")
+
+      return {
+        markdown = {
+          enable = true,
+          headings = presets.headings.glow,
+          tables = vim.tbl_deep_extend("force", presets.tables.rounded, {
+            -- Workaround for border drift when horizontally scrolling wide tables.
+            strict = true,
+            use_virt_lines = true,
+            block_decorator = true,
+          }),
+        },
+        markdown_inline = {
+          enable = true,
+          checkboxes = {
+            enable = true,
+          },
+        },
+        preview = {
+          enable = true,
+          debounce = 50,
+          filetypes = { "markdown" },
+          hybrid_modes = { "i" },
+          icon_provider = "devicons",
+          ignore_buftypes = { "nofile", "prompt", "help", "quickfix" },
+          linewise_hybrid_mode = false,
+          map_gx = false,
+          max_buf_lines = 1000,
+          modes = { "n", "no", "c" },
+        },
+      }
+    end
+  },
+  { "MeanderingProgrammer/render-markdown.nvim",
+    dependencies = {
+      "nvim-treesitter/nvim-treesitter",
+      "nvim-tree/nvim-web-devicons",
+    },
+    keys = util.map(
+      config.mapping.get_filtered('render-markdown'),
+      util.key_canon_to_lazy
+    ),
+    opts = {
+      file_types = { "markdown" },
+      render_modes = { "n", "c", "t" },
+      anti_conceal = {
+        enabled = false,
+      },
+      pipe_table = {
+        enabled = true,
+        cell = "padded",
+        border_enabled = true,
+        border_virtual = true,
+      },
+      win_options = {
+        wrap = {
+          default = true,
+          rendered = false,
+        },
+      },
+    },
+  },
   { "lukas-reineke/indent-blankline.nvim",
     main = "ibl",
     opts = {
@@ -164,6 +250,7 @@ return {
               })
 
             lspu.progress_handle_insert(args.data.request_id, handle)
+
           elseif args.data.request.type == "error" then
             local prog = lspu.progress_handle_take(args.data.request_id)
             if prog == nil then return end
@@ -375,7 +462,7 @@ return {
     --end,
   },
   { 'lewis6991/gitsigns.nvim',
-    enabled = false,
+    enabled = true,
     opts = {
       signs_staged_enable = true,
       current_line_blame_opts = {
@@ -391,7 +478,8 @@ return {
         util.key_canon_to_lazy
       ),
   },
-  { "sindrets/diffview.nvim",
+  { "dlyongemallo/diffview.nvim",
+    enabled = true,
     opts = {
       view = {
         default = {
@@ -410,6 +498,10 @@ return {
         config.mapping.get_filtered('diffview'),
         util.key_canon_to_lazy
       ),
+  },
+  {
+    "esmuellert/codediff.nvim",
+    cmd = "CodeDiff",
   },
   { 'Bekaboo/dropbar.nvim',
     opts = {
@@ -477,6 +569,7 @@ return {
     -- dependencies = {
     --   'nvim-telescope/telescope-fzf-native.nvim'
     -- }
+    enabled = false,
   },
   { "folke/flash.nvim",
     event = "VeryLazy",

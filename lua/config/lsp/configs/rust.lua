@@ -1,10 +1,18 @@
 local M = {}
 
+local capabilities = vim.lsp.protocol.make_client_capabilities()
+
+capabilities.textDocument.onTypeFormatting = {
+  dynamicRegistration = true,
+}
+
+vim.lsp.on_type_formatting.enable()
+
 M.server_settings = {
   -- Env for cargo
   extraEnv = { },
   -- capabilities = require("cmp_nvim_lsp").default_capabilities(),
-  capabilities = vim.lsp.protocol.make_client_capabilities(),
+  capabilities = capabilities,
   cargo = {
     -- allTargets = true, -- default
     -- features = "all"

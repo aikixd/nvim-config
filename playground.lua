@@ -1,15 +1,4 @@
--- local hls = vim.api.nvim_get_hl(0, {})
--- local filtered = {}
---
--- local test = 'CmpItemKind'
---
--- for k, v in pairs(hls) do
---   if string.sub(k, 0, string.len(test)) == test then
---     filtered[k] = v
---   end
--- end
---
--- vim.print(filtered)
+_G.dd(vim.api.nvim_get_commands({}))
 
 
 -------------------------------

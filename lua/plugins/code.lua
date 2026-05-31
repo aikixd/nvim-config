@@ -380,32 +380,28 @@ return {
   },
   { "nvim-treesitter/nvim-treesitter",
     -- enabled = false,
-    version = false, -- last release is way too old and doesn't work on Windows
     build = ":TSUpdate",
+    branch = "main",
     dependencies = {
-      'nvim-treesitter/nvim-treesitter-refactor'
+      -- This is deprecated. Leaving here lest I forget to find a replacement.
+      -- 'nvim-treesitter/nvim-treesitter-refactor'
     },
     event = { "BufReadPost", "BufNewFile" },
     config = function ()
-      local configs = require("nvim-treesitter.configs")
+      local ts = require("nvim-treesitter")
 
-      configs.setup({
-        ensure_installed = { "lua", "vim", "vimdoc", "rust" },
-        ignore_install = { "javascript" },
-        auto_install = true,
-        sync_install = false,
-        highlight = {
-          enable = true ,
-          additional_vim_regex_highlighting = false,
-        },
-        indent = { enable = true },
-        refactor = {
-          highlight_definitions = {
-            enable = false,
-            clear_on_cursor_move = false,
-          }
-        },
-      })
+      -- ts.setup()
+
+      ts.install({
+        "html",
+        "lua",
+        "markdown",
+        "markdown_inline",
+        "rust",
+        "vim",
+        "vimdoc",
+        "yaml",
+    })
     end
   }
 }

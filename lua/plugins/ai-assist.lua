@@ -286,11 +286,6 @@ return {
             picker = "snacks"
           }
         },
-        vectorcode = {
-          ---@type VectorCode.CodeCompanion.ExtensionOpts
-          opts = {
-          },
-        },
       },
       adapters = {
         http = {
@@ -373,6 +368,7 @@ return {
     end
   },
   { "Davidyz/VectorCode",
+    enabled = false,
     version = "*",
     build = "uv tool upgrade vectorcode", -- This helps keeping the CLI up-to-date
     opts = {

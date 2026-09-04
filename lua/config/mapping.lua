@@ -149,6 +149,8 @@ M.keys = {
     mk_map("nv", "<C-z>", "u",     "Undo"),
     mk_map("nv", "<S-z>", "<C-r>", "Redo"),
 
+    mk_map("n", "<A-q>", "<cmd>tabclose<cr>", "Close tab"),
+
     mk_map("i", "<M-[>", "[]<left>");
     mk_map("i", "<M-]>", "[<cr>]<esc><S-o>");
     mk_map("i", "<M-{>", "{}<left>");

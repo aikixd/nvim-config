@@ -51,6 +51,9 @@ return {
       flavour = "macchiato",
       term_colors = true,
       integrations = {
+        mini = {
+          enabled = true,
+        },
         neotree = true
       }
     },

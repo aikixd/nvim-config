@@ -590,7 +590,7 @@ return {
   },
   {
     dir = "/home/aikixd/Dev/playground/flameline.nvim",
-    -- enabled = false,
+    enabled = false,
     name = "flameline",
     config = function()
       require("flameline").setup({

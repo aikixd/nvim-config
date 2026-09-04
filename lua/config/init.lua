@@ -87,20 +87,21 @@ function M.setup(opts)
         typed_cmd = "cmd",
       },
       cmd = {
-        height = 0.5,
       },
       dialog = {
         height = 0.5,
       },
       msg = {
-        height = 0.3,
-        timeout = 5000,
+       height = 0.3,
       },
       pager = {
         height = 0.5,
       },
     },
   }
+
+  vim.opt.messagesopt.timeout = 5000
+
   require('vim._core.ui2').enable(ui2_conf)
 
   -- Debug helper
@@ -170,7 +171,7 @@ function M.setup(opts)
     },
   })
 
-  vim.lsp.codelens.enable(true)
+  vim.lsp.codelens.enable(false)
   vim.lsp.on_type_formatting.enable()
 
   -- vim.notify("Blocking Rust ftplugin.", vim.log.levels.INFO)
